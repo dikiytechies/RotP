@@ -45,6 +45,7 @@ public class VampirismData extends TypeSpecificData {
 
     private boolean vampireHamonUser = false;
     private float hamonStrengthLevel;
+    private boolean isNightVisionActivated = true;
     private Optional<CharacterHamonTechnique> hamonTechnique = Optional.empty();
 
     @Override
@@ -245,12 +246,21 @@ public class VampirismData extends TypeSpecificData {
     private static int getMaxCuringTicks(LivingEntity entity) {
         return JojoModConfig.getCommonConfigInstance(entity.level.isClientSide()).vampirismCuringDuration.get();
     }
+
+    public boolean isNightVisionActive() {
+        return isNightVisionActivated;
+    }
+
+    public void setNightVisionActive(boolean value) {
+        isNightVisionActivated = value;
+    }
     
     @Override
     public CompoundNBT writeNBT() {
         CompoundNBT nbt = new CompoundNBT();
         nbt.putBoolean("VampireFullPower", vampireFullPower);
         nbt.putInt("CuringTicks", curingTicks);
+        nbt.putBoolean("NightVisionActive", isNightVisionActivated);
         
         nbt.putBoolean("VampireHamonUser", vampireHamonUser);
         if (vampireHamonUser) {
@@ -270,6 +280,7 @@ public class VampirismData extends TypeSpecificData {
     public void readNBT(CompoundNBT nbt) {
         this.vampireFullPower = nbt.getBoolean("VampireFullPower");
         this.curingTicks = nbt.getInt("CuringTicks");
+        this.isNightVisionActivated = nbt.getBoolean("NightVisionActive");
 
         this.vampireHamonUser = nbt.getBoolean("VampireHamonUser");
         this.hamonStrengthLevel = nbt.getFloat("HamonStrength");
@@ -293,6 +304,8 @@ public class VampirismData extends TypeSpecificData {
                 user.getId(), vampireHamonUser), entity);
         PacketManager.sendToClient(TrVampirismDataPacket.atFullPower(
                 user.getId(), vampireFullPower), entity);
+        PacketManager.sendToClient(TrVampirismDataPacket.nightVisionActive(
+                user.getId(), isNightVisionActivated), entity);
         PacketManager.sendToClient(TrVampirismDataPacket.curingTicks(
                 user.getId(), curingTicks), entity);
     }

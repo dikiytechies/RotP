@@ -174,7 +174,7 @@ public class CustomVillagerTrades {
             if (playerHasHamon || playerHasVampirism)   pillarManTempleMapChance = 0;
             else if (playerHasStand)                    pillarManTempleMapChance = 0.0125;
             else switch (MapTrade.PILLARMAN_MAP.villagerFamiliarWith(villagerData.getType())) {
-            case /*FamiliarWith.*/THIS_BIOME:           pillarManTempleMapChance = 0.5;
+            case /*FamiliarWith.*/THIS_BIOME:           pillarManTempleMapChance = 1.0;
                 break;
             case /*FamiliarWith.*/OTHER_BIOME:          pillarManTempleMapChance = 0;
                 break;

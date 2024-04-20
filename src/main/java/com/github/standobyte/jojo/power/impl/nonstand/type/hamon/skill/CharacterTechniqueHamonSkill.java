@@ -47,6 +47,16 @@ public class CharacterTechniqueHamonSkill extends AbstractHamonSkill {
             }
             return this;
         }
+
+        public Builder teacherRequired() {
+            this.isTeacherRequired = true;
+            return this;
+        }
+
+        public Builder NPCRequired() {
+            this.isNPCRequired = true;
+            return this;
+        }
         
         public CharacterTechniqueHamonSkill build() {
             return new CharacterTechniqueHamonSkill(this);

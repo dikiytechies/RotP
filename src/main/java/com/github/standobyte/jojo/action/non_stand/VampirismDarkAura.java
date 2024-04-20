@@ -45,19 +45,19 @@ public class VampirismDarkAura extends VampirismAction {
                 boolean passive = entity instanceof AgeableEntity;
                 int amplifier = MathHelper.floor((difficulty - 1) * 1.5);
                 int duration = passive ? 600 : 200;
-                entity.addEffect(new EffectInstance(Effects.MOVEMENT_SLOWDOWN, duration, amplifier));
-                entity.addEffect(new EffectInstance(Effects.WEAKNESS, duration, amplifier));
-                entity.addEffect(new EffectInstance(Effects.DIG_SLOWDOWN, duration, amplifier));
+                entity.addEffect(new EffectInstance(Effects.MOVEMENT_SLOWDOWN, duration, amplifier, false, false, true));
+                entity.addEffect(new EffectInstance(Effects.WEAKNESS, duration, amplifier, false, false, true));
+                entity.addEffect(new EffectInstance(Effects.DIG_SLOWDOWN, duration, amplifier, false, false, true));
                 if (passive) {
-                    entity.addEffect(new EffectInstance(ModStatusEffects.STUN.get(), duration));
+                    entity.addEffect(new EffectInstance(ModStatusEffects.STUN.get(), duration, 0, false, false, true));
                 }
             }
             if (world.getDifficulty() == Difficulty.HARD) {
                 for (HungryZombieEntity zombie : MCUtil.entitiesAround(
                         HungryZombieEntity.class, user, range, false, zombie -> zombie.isEntityOwner(user))) {
-                    zombie.addEffect(new EffectInstance(Effects.MOVEMENT_SPEED, 300, 1));
-                    zombie.addEffect(new EffectInstance(Effects.DAMAGE_BOOST, 300, 0));
-                    zombie.addEffect(new EffectInstance(Effects.DAMAGE_RESISTANCE, 300, 0));
+                    zombie.addEffect(new EffectInstance(Effects.MOVEMENT_SPEED, 300, 1, false, false, true));
+                    zombie.addEffect(new EffectInstance(Effects.DAMAGE_BOOST, 300, 0, false, false, true));
+                    zombie.addEffect(new EffectInstance(Effects.DAMAGE_RESISTANCE, 300, 0, false, false, true));
                 }
             }
         }

@@ -86,7 +86,7 @@ public class HamonHealing extends HamonAction {
                 }
             }
         }
-        entity.addEffect(new EffectInstance(Effects.REGENERATION, duration, level));
+        entity.addEffect(new EffectInstance(Effects.REGENERATION, duration, level, false, false, true));
     }
     
     private boolean canBeHealed(LivingEntity targetEntity, LivingEntity user) {

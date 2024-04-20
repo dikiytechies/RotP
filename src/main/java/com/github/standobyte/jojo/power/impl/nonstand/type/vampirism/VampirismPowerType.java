@@ -146,12 +146,16 @@ public class VampirismPowerType extends NonStandPowerType<VampirismData> {
                         maxHpIncreased = amplifier >= 0 && 
                                 amplifier > Optional.ofNullable(entity.getEffect(Effects.HEALTH_BOOST)).map(EffectInstance::getAmplifier).orElse(-1);
                     }
-                    if (amplifier >= 0) {
+                    if (amplifier >= 0 && effect != Effects.NIGHT_VISION) {
                         entity.removeEffectNoUpdate(effect);
                         entity.addEffect(new EffectInstance(effect, Integer.MAX_VALUE, amplifier, false, false));
                     }
                     else {
                         entity.removeEffect(effect);
+                    }
+                    if (effect == Effects.NIGHT_VISION && power.getTypeSpecificData(ModPowers.VAMPIRISM.get()).map(vampirismP -> vampirismP.isNightVisionActive()).orElse(false)) {
+                        entity.removeEffectNoUpdate(effect);
+                        entity.addEffect(new EffectInstance(effect, Integer.MAX_VALUE, amplifier, false, false));
                     }
                     if (missingHp > -1) {
                         if (maxHpIncreased) {

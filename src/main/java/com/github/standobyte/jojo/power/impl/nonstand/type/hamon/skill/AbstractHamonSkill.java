@@ -24,42 +24,46 @@ public abstract class AbstractHamonSkill extends ForgeRegistryEntry<AbstractHamo
     private final RewardType rewardType;
     private final Object2BooleanMap<Supplier<? extends HamonAction>> rewardActions;
     private final List<Supplier<? extends AbstractHamonSkill>> requiredSkills;
+    private boolean isTeacherRequired;
+    private boolean isNPCRequired;
 
     protected AbstractHamonSkill(AbstractBuilder builder) {
         this.rewardType = builder.rewardType;
         this.rewardActions = builder.rewardActions;
         this.requiredSkills = builder.requiredSkills;
+        this.isTeacherRequired = builder.isTeacherRequired;
+        this.isNPCRequired = builder.isNPCRequired;
     }
-    
+
     public RewardType getRewardType() {
         return rewardType;
     }
-    
+
     public Stream<HamonAction> getRewardActions() {
         return rewardActions.keySet().stream().map(Supplier::get);
     }
-    
+
     public Stream<HamonAction> getRewardActions(boolean addedToHud) {
         return rewardActions.object2BooleanEntrySet().stream()
                 .filter(entry -> entry.getBooleanValue() == addedToHud)
                 .map(Map.Entry::getKey)
                 .map(Supplier::get);
     }
-    
+
     public boolean addsExtraToHud() {
         return rewardActions.object2BooleanEntrySet().stream()
                 .filter(entry -> entry.getBooleanValue())
                 .findAny().isPresent();
     }
-    
+
     public boolean isUnlockedByDefault() {
         return false;
     }
-    
+
     public boolean requiresTeacher() {
-        return false;
+        return isTeacherRequired;
     }
-    
+
     public Stream<AbstractHamonSkill> getRequiredSkills() {
         return requiredSkills.stream().map(Supplier::get);
     }
@@ -131,6 +135,8 @@ public abstract class AbstractHamonSkill extends ForgeRegistryEntry<AbstractHamo
         protected final RewardType rewardType;
         protected Object2BooleanMap<Supplier<? extends HamonAction>> rewardActions = new Object2BooleanArrayMap<>();
         protected final List<Supplier<? extends AbstractHamonSkill>> requiredSkills = new ArrayList<>();
+        protected boolean isTeacherRequired = false;
+        protected boolean isNPCRequired = false;
         
         public AbstractBuilder(RewardType rewardType) {
             this.rewardType = rewardType;

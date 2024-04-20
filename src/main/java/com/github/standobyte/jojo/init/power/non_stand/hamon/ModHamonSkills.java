@@ -273,13 +273,13 @@ public class ModHamonSkills {
 
     public static final RegistryObject<CharacterTechniqueHamonSkill> SATIPOROJA_SCARF = HAMON_SKILLS.register("satiporoja_scarf",
             () -> new CharacterTechniqueHamonSkill.Builder(RewardType.ITEM)
-            .requiredSkill(ANIMAL_INFUSION).build());
+            .requiredSkill(ANIMAL_INFUSION).teacherRequired().NPCRequired().build());
     
     public static final RegistryObject<CharacterTechniqueHamonSkill> SNAKE_MUFFLER = HAMON_SKILLS.register("snake_muffler",
             () -> new CharacterTechniqueHamonSkill.Builder(RewardType.ITEM)
             .requiredSkill(SATIPOROJA_SCARF).requiredSkill(DETECTOR).build());
     
-    public static final RegistryObject<CharacterHamonTechnique> CHARACTER_LISA_LISA = HAMON_CHARACTER_TECHNIQUES.register("lisa_lisa", 
+    public static final RegistryObject<CharacterHamonTechnique> CHARACTER_LISA_LISA = HAMON_CHARACTER_TECHNIQUES.register("lisa_lisa",
             () -> new CharacterHamonTechnique.Builder("lisa_lisa", Util.make(new ArrayList<>(), list -> {
                 list.add(ModHamonSkills.AJA_STONE_KEEPER);
                 list.add(ModHamonSkills.SATIPOROJA_SCARF);
@@ -287,4 +287,13 @@ public class ModHamonSkills {
             }))
             .musicOnPick(ModSounds.HAMON_PICK_LISA_LISA).build());
 
+
+
+    //shitcode teacher character (new)
+    public static final RegistryObject<BaseHamonSkill> NPC = HAMON_SKILLS.register("npc",
+            () -> new BaseHamonSkill.Builder(HamonStat.CONTROL,RewardType.PASSIVE)
+                    .build());
+
+    //BaseHamonSkill be like:
+    //Adskaya drochil'nya
 }
