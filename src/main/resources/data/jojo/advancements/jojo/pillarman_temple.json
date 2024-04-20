@@ -1,5 +1,5 @@
 {
-  "parent": "jojo:jojo/root",
+  "parent": "jojo:jojo/get_pillarman_temple_map",
   "display": {
     "icon": {
       "item": "jojo:slumbering_pillarman"

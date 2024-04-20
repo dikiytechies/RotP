@@ -17,6 +17,14 @@ import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.github.standobyte.jojo.capability.entity.PlayerUtilCapProvider;
+import com.github.standobyte.jojo.capability.entity.power.NonStandCapProvider;
+import com.github.standobyte.jojo.init.power.non_stand.vampirism.ModVampirismActions;
+import com.github.standobyte.jojo.init.power.stand.ModStandEffects;
+import com.github.standobyte.jojo.init.power.stand.ModStandsInit;
+import com.github.standobyte.jojo.power.impl.stand.StandEffectsTracker;
+import net.minecraft.entity.EntityType;
+import net.minecraft.item.ItemStack;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.github.standobyte.jojo.JojoMod;

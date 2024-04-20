@@ -73,13 +73,13 @@ public class VampirismFreeze extends VampirismAction {
                         EffectInstance freezeInstance = targetLiving.getEffect(ModStatusEffects.FREEZE.get());
                         if (freezeInstance == null) {
                             world.playSound(null, targetLiving, ModSounds.VAMPIRE_FREEZE.get(), targetLiving.getSoundSource(), 1.0F, 1.0F);
-                            targetLiving.addEffect(new EffectInstance(ModStatusEffects.FREEZE.get(), (difficulty + 1) * 50, 0));
+                            targetLiving.addEffect(new EffectInstance(ModStatusEffects.FREEZE.get(), (difficulty + 1) * 50, 0, false, false, true));
                         }
                         else {
                             int additionalDuration = (difficulty - 1) * 5 + 1;
                             int duration = freezeInstance.getDuration() + additionalDuration;
                             int lvl = duration / 100;
-                            targetLiving.addEffect(new EffectInstance(ModStatusEffects.FREEZE.get(), duration, lvl));
+                            targetLiving.addEffect(new EffectInstance(ModStatusEffects.FREEZE.get(), duration, lvl, false, false, true));
                         }
                     }
                 }

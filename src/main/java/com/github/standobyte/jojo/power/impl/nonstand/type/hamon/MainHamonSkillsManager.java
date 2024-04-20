@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 import com.github.standobyte.jojo.action.Action;
 import com.github.standobyte.jojo.action.ActionConditionResult;
 import com.github.standobyte.jojo.init.power.JojoCustomRegistries;
+import com.github.standobyte.jojo.init.power.non_stand.hamon.ModHamonSkills;
 import com.github.standobyte.jojo.network.PacketManager;
 import com.github.standobyte.jojo.network.packets.fromserver.HamonSkillAddPacket;
 import com.github.standobyte.jojo.power.impl.nonstand.INonStandPower;
@@ -119,12 +120,17 @@ public class MainHamonSkillsManager implements IHamonSkillsManager<AbstractHamon
     }
 
     private static final ActionConditionResult NO_TEACHER = ActionConditionResult.createNegative(new TranslationTextComponent("hamon.closed.teacher.required"));
+    private static final ActionConditionResult NO_NPC_TEACHER = ActionConditionResult.createNegative(new TranslationTextComponent("hamon.closed.teacher_npc.required"));
     private static final ActionConditionResult NO_TEACHER_SKILL = ActionConditionResult.createNegative(new TranslationTextComponent("hamon.closed.teacher.no_skill"));
     ActionConditionResult canLearnSkill(LivingEntity user, HamonData hamon, AbstractHamonSkill skill, @Nullable Collection<? extends AbstractHamonSkill> teachersSkills) {
         ActionConditionResult checksWithoutTeacher = canLearnSkill(user, hamon, skill);
         if (checksWithoutTeacher.isPositive() && skill.requiresTeacher()) {
             if (teachersSkills == null) {
+                if (skill == ModHamonSkills.SATIPOROJA_SCARF.get()) return NO_NPC_TEACHER;
                 return NO_TEACHER;
+            }
+            else if (skill == ModHamonSkills.SATIPOROJA_SCARF.get() && !teachersSkills.contains(ModHamonSkills.NPC.get())) {
+                return NO_NPC_TEACHER;
             }
             else if (!teachersSkills.contains(skill)) {
                 return NO_TEACHER_SKILL;

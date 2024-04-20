@@ -217,6 +217,12 @@
   "advancements.jojo.destroy_stone_mask.description": "Уничтожьте каменную маску кувалдой",
   "advancements.jojo.no_stand_kill_stand.title": "Huh? You Can't Stand Losers?",
   "advancements.jojo.no_stand_kill_stand.description": "Победите обладателя Стенда, не имея Стенда",
+  "advancements.jojo.get_pillarman_temple_map.title": "Спонсировано фондом",
+  "advancements.jojo.get_pillarman_temple_map.description": "Никто же не собирается предать нас, не так ли?",
+  "advancements.jojo.get_hamon_temple_map.title": "Забытая техника",
+  "advancements.jojo.get_hamon_temple_map.description": "Предначертанная судьба ждёт вас",
+  "advancements.jojo.get_meteorite_map.title": "Открытие Геодезистов",
+  "advancements.jojo.get_meteorite_map.description": "Никто ещё не узнал предназначение этого метеорита",
   
   "jojo.subtitle.stone_mask_activation_entity": "Каменная маска активирована",
   "jojo.subtitle.stone_mask_activation": "Каменная маска среагировала",
@@ -725,6 +731,7 @@
   "hamon.closed.technique.max": "You've reached maximum of technique skills!",
   "hamon.closed.technique.bug": "Вы не можете изучить навык другой техники",
   "hamon.closed.teacher.required": "Вы можете научиться этому только у другого пользователя Хамона!",
+  "hamon.closed.teacher_npc.required": "Вы можете научиться этому только у Хамон Мастера!",
   "hamon.closed.teacher.no_skill": "Никто поблизости не изучил этот навык!",
   "hamon.skill.required_skills_list": "Нужные навыки:",
   

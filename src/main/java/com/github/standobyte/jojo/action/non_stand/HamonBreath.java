@@ -8,15 +8,19 @@ import com.github.standobyte.jojo.util.mod.JojoModUtil;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.SoundEvent;
 
+import java.util.Random;
+
 public class HamonBreath extends HamonAction {
 
     public HamonBreath(Builder builder) {
         super(builder);
     }
-    
+
+    Random random = new Random();
+
     @Override
     public void playVoiceLine(LivingEntity user, INonStandPower power, ActionTarget target, boolean wasActive, boolean shift) {
-        if (power.getEnergy() == 0) {
+        if ((power.getEnergy() == 0 && random.nextFloat() <= 0.15f) || (user.getHealth() <= user.getMaxHealth() * 0.15 && random.nextFloat() <= 0.45f)) {
             SoundEvent shout = getShout(user, power, target, wasActive);
             if (shout != null) {
                 JojoModUtil.sayVoiceLine(user, shout, null, 1.0F - 0.5F * power.getEnergy() / power.getMaxEnergy(), 1.0F, 0, true);

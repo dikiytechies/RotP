@@ -1,5 +1,5 @@
 {
-  "parent": "jojo:jojo/root",
+  "parent": "jojo:jojo/get_hamon_temple_map",
   "display": {
     "icon": {
       "item": "minecraft:orange_terracotta"

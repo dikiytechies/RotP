@@ -30,6 +30,10 @@ public class TrVampirismDataPacket {
     public static TrVampirismDataPacket curingTicks(int entityId, int ticks) {
         return new TrVampirismDataPacket(entityId, VampireField.CURING_TICKS, false, ticks);
     }
+
+    public static TrVampirismDataPacket nightVisionActive(int entityId, boolean value) {
+        return new TrVampirismDataPacket(entityId, VampireField.NIGHT_VISION_ACTIVE, value, 0);
+    }
     
     private TrVampirismDataPacket(int entityId, VampireField flag, boolean valueBool, int valueInt) {
         this.entityId = entityId;
@@ -53,6 +57,9 @@ public class TrVampirismDataPacket {
             case CURING_TICKS:
                 buf.writeInt(msg.valueInt);
                 break;
+            case NIGHT_VISION_ACTIVE:
+                buf.writeBoolean(msg.valueBool);
+                break;
             }
         }
 
@@ -65,6 +72,8 @@ public class TrVampirismDataPacket {
                 return new TrVampirismDataPacket(entityId, field, buf.readBoolean(), 0);
             case CURING_TICKS:
                 return new TrVampirismDataPacket(entityId, field, false, buf.readInt());
+            case NIGHT_VISION_ACTIVE:
+                return new TrVampirismDataPacket(entityId, field, buf.readBoolean(), 0);
             }
             throw new IllegalStateException("Unknown JoJo vampirism field being sent!");
         }
@@ -90,6 +99,11 @@ public class TrVampirismDataPacket {
                             vampirism.setCuringTicks(msg.valueInt);
                         });
                         break;
+                    case NIGHT_VISION_ACTIVE:
+                        power.getTypeSpecificData(ModPowers.VAMPIRISM.get()).ifPresent(vampirism -> {
+                            vampirism.setNightVisionActive(msg.valueBool);
+                        });
+                        break;
                     }
                 });
             }
@@ -104,6 +118,7 @@ public class TrVampirismDataPacket {
     private static enum VampireField {
         WAS_HAMON_USER,
         AT_FULL_POWER,
-        CURING_TICKS
+        CURING_TICKS,
+        NIGHT_VISION_ACTIVE
     }
 }

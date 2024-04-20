@@ -65,9 +65,10 @@ public class ModStructures {
     public static final void afterStructuresRegister(RegistryEvent.Register<Structure<?>> event) {
         Registry<StructureFeature<?, ?>> registry = WorldGenRegistries.CONFIGURED_STRUCTURE_FEATURE;
 
-        setupMapSpacingAndLand(HAMON_TEMPLE.get(), new StructureSeparationSettings(20, 8, 139567129), true);
-        setupMapSpacingAndLand(METEORITE.get(), new StructureSeparationSettings(40, 12, 286704381), false);
-        setupMapSpacingAndLand(PILLARMAN_TEMPLE.get(), new StructureSeparationSettings(64, 20, 64023956), false);
+        setupMapSpacingAndLand(HAMON_TEMPLE.get(), new StructureSeparationSettings(188, 94, 139567129), true);
+        setupMapSpacingAndLand(METEORITE.get(), new StructureSeparationSettings(215, 180, 286704381), false);
+        setupMapSpacingAndLand(PILLARMAN_TEMPLE.get(), new StructureSeparationSettings(205, 175, 64023956), false);
+
 
         HamonTemplePieces.initPieceType();
         MeteoritePieces.initPieceType();

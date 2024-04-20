@@ -219,6 +219,12 @@
   "advancements.jojo.destroy_stone_mask.description": "Destroy a Stone Mask with a sledgehammer",
   "advancements.jojo.no_stand_kill_stand.title": "Huh? You Can't Stand Losers?",
   "advancements.jojo.no_stand_kill_stand.description": "Defeat a Stand user without having a Stand",
+  "advancements.jojo.get_hamon_temple_map.title": "The Forgotten Technique",
+  "advancements.jojo.get_hamon_temple_map.description": "The disposed fate awaits you",
+  "advancements.jojo.get_meteorite_map.title": "Surveyers' Discover",
+  "advancements.jojo.get_meteorite_map.description": "No one has discovered the purpose of that meteorite",
+  "advancements.jojo.get_pillarman_temple_map.title": "Sponsored by Foundation",
+  "advancements.jojo.get_pillarman_temple_map.description": "Nobody gonna betray us, are they?",
   
   "jojo.subtitle.stone_mask_activation_entity": "Stone Mask activates",
   "jojo.subtitle.stone_mask_activation": "Stone Mask reacts",
@@ -732,6 +738,7 @@
   "hamon.closed.technique.max": "You've reached maximum of technique skills!",
   "hamon.closed.technique.bug": "You can't learn a skill of another technique (if you for some reason can see this, it means this screen tab is bugged)",
   "hamon.closed.teacher.required": "You can only learn this from another Hamon user!",
+  "hamon.closed.teacher_npc.required": "You can only learn this from Hamon Master!",
   "hamon.closed.teacher.no_skill": "No one nearby you has learned this skill!",
   "hamon.skill.required_skills_list": "Required skills:",
   

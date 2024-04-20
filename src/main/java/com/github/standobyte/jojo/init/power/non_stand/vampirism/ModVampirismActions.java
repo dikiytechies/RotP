@@ -3,16 +3,7 @@ package com.github.standobyte.jojo.init.power.non_stand.vampirism;
 import static com.github.standobyte.jojo.init.power.ModCommonRegisters.ACTIONS;
 import static com.github.standobyte.jojo.init.power.ModCommonRegisters.NON_STAND_POWERS;
 
-import com.github.standobyte.jojo.action.non_stand.NonStandAction;
-import com.github.standobyte.jojo.action.non_stand.VampirismAction;
-import com.github.standobyte.jojo.action.non_stand.VampirismBloodDrain;
-import com.github.standobyte.jojo.action.non_stand.VampirismBloodGift;
-import com.github.standobyte.jojo.action.non_stand.VampirismClawLacerate;
-import com.github.standobyte.jojo.action.non_stand.VampirismDarkAura;
-import com.github.standobyte.jojo.action.non_stand.VampirismFreeze;
-import com.github.standobyte.jojo.action.non_stand.VampirismHamonSuicide;
-import com.github.standobyte.jojo.action.non_stand.VampirismSpaceRipperStingyEyes;
-import com.github.standobyte.jojo.action.non_stand.VampirismZombieSummon;
+import com.github.standobyte.jojo.action.non_stand.*;
 import com.github.standobyte.jojo.power.impl.nonstand.type.vampirism.VampirismPowerType;
 
 import net.minecraftforge.fml.RegistryObject;
@@ -44,6 +35,9 @@ public class ModVampirismActions {
     public static final RegistryObject<VampirismAction> VAMPIRISM_DARK_AURA = ACTIONS.register("vampirism_dark_aura", 
             () -> new VampirismDarkAura(new NonStandAction.Builder().energyCost(25F).cooldown(300).ignoresPerformerStun()));
 
+    public static final RegistryObject<VampirismAction> VAMPIRISM_NIGHT_VISION = ACTIONS.register("vampirism_night_vision",
+            () -> new VampirismVision(new NonStandAction.Builder().ignoresPerformerStun()));
+
     public static final RegistryObject<VampirismAction> VAMPIRISM_HAMON_SUICIDE = ACTIONS.register("vampirism_hamon_suicide", 
             () -> new VampirismHamonSuicide(new NonStandAction.Builder().holdToFire(100, false).ignoresPerformerStun()));
 
@@ -59,7 +53,8 @@ public class ModVampirismActions {
                     new VampirismAction[] {
                             VAMPIRISM_BLOOD_GIFT.get(), 
                             VAMPIRISM_ZOMBIE_SUMMON.get(), 
-                            VAMPIRISM_DARK_AURA.get()},
+                            VAMPIRISM_DARK_AURA.get(),
+                            VAMPIRISM_NIGHT_VISION.get()},
                     
                     VAMPIRISM_BLOOD_DRAIN.get()
                     ));

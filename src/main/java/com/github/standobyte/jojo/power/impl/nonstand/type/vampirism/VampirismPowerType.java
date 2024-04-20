@@ -147,12 +147,16 @@ public class VampirismPowerType extends NonStandPowerType<VampirismData> {
                         maxHpIncreased = amplifier >= 0 && 
                                 amplifier > Optional.ofNullable(entity.getEffect(Effects.HEALTH_BOOST)).map(EffectInstance::getAmplifier).orElse(-1);
                     }
-                    if (amplifier >= 0) {
+                    if (amplifier >= 0 && effect != Effects.NIGHT_VISION) {
                         entity.removeEffectNoUpdate(effect);
                         entity.addEffect(new EffectInstance(effect, Integer.MAX_VALUE, amplifier, false, false));
                     }
                     else {
                         entity.removeEffect(effect);
+                    }
+                    if (effect == Effects.NIGHT_VISION && power.getTypeSpecificData(ModPowers.VAMPIRISM.get()).map(vampirismP -> vampirismP.isNightVisionActive()).orElse(false)) {
+                        entity.removeEffectNoUpdate(effect);
+                        entity.addEffect(new EffectInstance(effect, Integer.MAX_VALUE, amplifier, false, false));
                     }
                     if (missingHp > -1) {
                         if (maxHpIncreased) {
@@ -167,7 +171,7 @@ public class VampirismPowerType extends NonStandPowerType<VampirismData> {
         }
         vampirism.tickCuring(entity, power);
     }
-    
+
     private static int getEffectAmplifier(Effect effect, int bloodLevel, int difficulty, int curingStage, INonStandPower power) {
         if (effect.isBeneficial() && curingStage > 0) {
             if (curingStage >= 3) {
@@ -178,13 +182,12 @@ public class VampirismPowerType extends NonStandPowerType<VampirismData> {
         }
         if (effect.getCategory() == EffectType.HARMFUL)                     return curingStage >= 4 ? effect == Effects.BLINDNESS ? 0 : 3 - difficulty : -1;
         if (effect == Effects.HEALTH_BOOST)                                 return difficulty * (curingStage > 0 ? 5 - curingStage * 2 : 5) - 1;
-        if (effect == ModStatusEffects.UNDEAD_REGENERATION.get())                 return Math.min(bloodLevel - 4, 6);
+        if (effect == ModStatusEffects.UNDEAD_REGENERATION.get())           return Math.min(bloodLevel - 2, 4);
         if (effect == Effects.DAMAGE_BOOST)                                 return bloodLevel - 5;
         if (effect == Effects.MOVEMENT_SPEED)                               return bloodLevel - 4;
         if (effect == Effects.DIG_SPEED)                                    return bloodLevel - 4;
-        if (effect == Effects.JUMP)                                         return bloodLevel - 5;
-//        if (effect == Effects.DAMAGE_RESISTANCE)                            return bloodLevel - 6;
-        if (effect == Effects.NIGHT_VISION)                                 return 0;
+        if (effect == Effects.JUMP)                                         return bloodLevel - 4;
+        if (effect == Effects.NIGHT_VISION)                                 return bloodLevel > 0? 0: -1;
         return -1;
     }
     

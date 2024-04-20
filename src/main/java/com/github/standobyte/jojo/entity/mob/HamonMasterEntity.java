@@ -129,6 +129,9 @@ public class HamonMasterEntity extends MobEntity implements INPC, IMobPowerUser,
         hamon.setBreathingLevel(HamonData.MAX_BREATHING_LEVEL);
         hamon.setHamonStatPoints(HamonStat.STRENGTH, HamonData.MAX_HAMON_POINTS, true, true);
         hamon.setHamonStatPoints(HamonStat.CONTROL, HamonData.MAX_HAMON_POINTS, true, true);
+        hamon.addHamonSkill(this, ModHamonSkills.SATIPOROJA_SCARF.get(), false, false);
+        //watahell is that shit code
+//        hamon.addHamonSkill(this, ModHamonSkills.NPC.get(), false, false);
         for (AbstractHamonSkill skill : JojoCustomRegistries.HAMON_SKILLS.getRegistry().getValues()) {
             if (skill.isBaseSkill()) {
                 hamon.addHamonSkill(this, skill, false, false);
