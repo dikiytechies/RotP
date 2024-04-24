@@ -135,8 +135,8 @@ public class VampirismBloodDrain extends VampirismAction {
                     int duration = MathHelper.floor(20F * bloodDrainDamage);
                     EffectInstance effectInstance = target.getEffect(effect);
                     EffectInstance newInstance = effectInstance == null ? 
-                            new EffectInstance(effect, duration, effectsLvl)
-                            : new EffectInstance(effect, effectInstance.getDuration() + duration, effectsLvl);
+                            new EffectInstance(effect, duration, effectsLvl, false, false, true)
+                            : new EffectInstance(effect, effectInstance.getDuration() + duration, effectsLvl, false, false, true);
                     target.addEffect(newInstance);
                 }
             }
