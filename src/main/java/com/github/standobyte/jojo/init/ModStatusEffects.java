@@ -6,18 +6,7 @@ import java.util.Set;
 
 import com.github.standobyte.jojo.JojoMod;
 import com.github.standobyte.jojo.entity.stand.StandEntity;
-import com.github.standobyte.jojo.potion.FreezeEffect;
-import com.github.standobyte.jojo.potion.HamonShockEffect;
-import com.github.standobyte.jojo.potion.HamonSpreadEffect;
-import com.github.standobyte.jojo.potion.HypnosisEffect;
-import com.github.standobyte.jojo.potion.ImmobilizeEffect;
-import com.github.standobyte.jojo.potion.ResolveEffect;
-import com.github.standobyte.jojo.potion.StaminaRegenEffect;
-import com.github.standobyte.jojo.potion.StandVirusEffect;
-import com.github.standobyte.jojo.potion.StatusEffect;
-import com.github.standobyte.jojo.potion.StunEffect;
-import com.github.standobyte.jojo.potion.UndeadRegenerationEffect;
-import com.github.standobyte.jojo.potion.VampireSunBurnEffect;
+import com.github.standobyte.jojo.potion.*;
 import com.github.standobyte.jojo.power.impl.nonstand.type.vampirism.VampirismPowerType;
 
 import net.minecraft.entity.LivingEntity;
@@ -48,6 +37,9 @@ public class ModStatusEffects {
     
     public static final RegistryObject<VampireSunBurnEffect> VAMPIRE_SUN_BURN = EFFECTS.register("sun_burn", 
             () -> new VampireSunBurnEffect().setUncurable());
+
+    public static final RegistryObject<Effect> FEAR_EFFECT = EFFECTS.register("fear",
+            () -> new FearEffect().setUncurable());
     
     public static final RegistryObject<HamonSpreadEffect> HAMON_SPREAD = EFFECTS.register("hamon_spread", 
             () -> new HamonSpreadEffect(EffectType.HARMFUL, 0xFFC10A).setUncurable());
@@ -96,6 +88,10 @@ public class ModStatusEffects {
     
     public static final RegistryObject<Effect> MISSHAPEN_LEGS = EFFECTS.register("misshapen_legs", 
             () -> new StatusEffect(EffectType.HARMFUL, 0x808080));
+    public static final RegistryObject<Effect> BINDED = EFFECTS.register("binded",
+            () -> new ImmobilizeEffect(0xF7B731));
+    public static final RegistryObject<Effect> SLOWBURN = EFFECTS.register("slowburn",
+            () -> new SlowBurnEffect().setUncurable());
     
 //    public static final RegistryObject<Effect> STAND_SEALING = EFFECTS.register("stand_sealing", 
 //            () -> new StatusEffect(EffectType.HARMFUL, 0xCACAD8)); // TODO Stand Sealing effect

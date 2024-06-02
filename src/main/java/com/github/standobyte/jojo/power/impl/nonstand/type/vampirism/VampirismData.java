@@ -39,7 +39,7 @@ import net.minecraftforge.registries.IForgeRegistry;
 public class VampirismData extends TypeSpecificData {
     private boolean vampireFullPower = false;
     private int lastBloodLevel = -999;
-    
+
     private int curingTicks = 0;
     private boolean curingStageChanged = false;
 
@@ -51,14 +51,14 @@ public class VampirismData extends TypeSpecificData {
     @Override
     public void onPowerGiven(NonStandPowerType<?> oldType, TypeSpecificData oldData) {
         LivingEntity user = power.getUser();
-        
+
         if (!user.level.isClientSide()) {
             if (oldType == ModPowers.HAMON.get() && oldData instanceof HamonData) {
                 setVampireHamonUser(true, Optional.of((HamonData) oldData));
             }
             power.addEnergy(300);
         }
-        
+
         IStandPower.getStandPowerOptional(user).ifPresent(stand -> {
             if (stand.hasPower() && stand.wasProgressionSkipped()) {
                 stand.skipProgression();
@@ -68,9 +68,9 @@ public class VampirismData extends TypeSpecificData {
 
     @Override
     public boolean isActionUnlocked(Action<INonStandPower> action, INonStandPower power) {
-        return vampireFullPower || 
-                action == ModVampirismActions.VAMPIRISM_BLOOD_DRAIN.get() || 
-                action == ModVampirismActions.VAMPIRISM_BLOOD_GIFT.get() || 
+        return vampireFullPower ||
+                action == ModVampirismActions.VAMPIRISM_BLOOD_DRAIN.get() ||
+                action == ModVampirismActions.VAMPIRISM_BLOOD_GIFT.get() ||
                 vampireHamonUser && action == ModVampirismActions.VAMPIRISM_HAMON_SUICIDE.get();
     }
 
@@ -83,13 +83,13 @@ public class VampirismData extends TypeSpecificData {
             return;
         }
         this.vampireHamonUser = vampireHamonUser;
-        
+
         LivingEntity user = power.getUser();
         if (!user.level.isClientSide()) {
             PacketManager.sendToClientsTrackingAndSelf(TrVampirismDataPacket.wasHamonUser(user.getId(), vampireHamonUser), user);
         }
-        
-        
+
+
         if (vampireHamonUser && prevHamon.isPresent()) {
             HamonData hamon = prevHamon.get();
             hamonStrengthLevel = hamon.getHamonStrengthLevel();
@@ -98,16 +98,16 @@ public class VampirismData extends TypeSpecificData {
         else {
             hamonStrengthLevel = 0;
         }
-        
+
         if (user.level.isClientSide()) {
             power.clUpdateHud();
         }
     }
-    
+
     public float getPrevHamonStrengthLevel() {
         return hamonStrengthLevel;
     }
-    
+
     public Optional<CharacterHamonTechnique> getPrevHamonCharacter() {
         return hamonTechnique;
     }
@@ -115,15 +115,15 @@ public class VampirismData extends TypeSpecificData {
     public boolean isVampireAtFullPower() {
         return vampireFullPower;
     }
-    
+
     public void setVampireFullPower(boolean vampireFullPower) {
         if (this.vampireFullPower == vampireFullPower) {
             return;
         }
-        
+
         LivingEntity user = power.getUser();
         this.vampireFullPower = vampireFullPower;
-        
+
         if (!user.level.isClientSide()) {
             PacketManager.sendToClientsTrackingAndSelf(TrVampirismDataPacket.atFullPower(user.getId(), vampireFullPower), user);
         }
@@ -131,16 +131,16 @@ public class VampirismData extends TypeSpecificData {
             power.clUpdateHud();
         }
     }
-    
+
     public int getCuringTicks() {
         return curingTicks;
     }
-    
+
     public float getCuringProgress() {
         int curingMaxTicks = getMaxCuringTicks(power.getUser());
         return (float) curingTicks / (float) curingMaxTicks;
     }
-    
+
     public int getCuringStage() {
         if (isBeingCured()) {
             float curingProgress = getCuringProgress();
@@ -150,11 +150,11 @@ public class VampirismData extends TypeSpecificData {
             return 0;
         }
     }
-    
+
     public boolean isBeingCured() {
         return curingTicks > 0;
     }
-    
+
     // FIXME (vampire\curing) curing side effects
     // FIXME (vampire\curing) also lower buffs over time
     private static final double[] NAUSEA_CHANCE = {0, 0, 1/2400, 1/1200, 1/600};
@@ -165,12 +165,12 @@ public class VampirismData extends TypeSpecificData {
             if (curingStage >= 2 && user.getRandom().nextDouble() <= NAUSEA_CHANCE[Math.min(curingStage, NAUSEA_CHANCE.length + 1)]) {
                 user.addEffect(new EffectInstance(Effects.CONFUSION, 200));
             }
-            
+
             int curingMaxTicks = getMaxCuringTicks(user);
             if (!user.level.isClientSide() && curingTicks >= curingMaxTicks && user instanceof ServerPlayerEntity) {
                 ((ServerPlayerEntity) user).displayClientMessage(new TranslationTextComponent("jojo.vampire.ready_to_cure"), true);
             }
-            
+
             if (curingTicks < curingMaxTicks) {
                 if (power.getEnergy() == 0) {
                     curingTicks = Math.min(curingTicks + getCuringTickProgress(), curingMaxTicks);
@@ -179,7 +179,7 @@ public class VampirismData extends TypeSpecificData {
             }
         }
     }
-    
+
     public void setCuringTicks(int ticks) {
         if (this.curingTicks != ticks) {
             LivingEntity user = power.getUser();
@@ -189,7 +189,7 @@ public class VampirismData extends TypeSpecificData {
             this.curingTicks = ticks;
         }
     }
-    
+
     private int getCuringTickProgress() {
         int i = 1;
         LivingEntity user = power.getUser();
@@ -216,14 +216,14 @@ public class VampirismData extends TypeSpecificData {
         }
         return i;
     }
-    
+
     public static void finishCuringOnWakingUp(LivingEntity entity) {
         if (!entity.level.isClientSide()) {
             INonStandPower.getNonStandPowerOptional(entity).ifPresent(power -> {
                 power.getTypeSpecificData(ModPowers.VAMPIRISM.get()).ifPresent(vampirism -> {
                     if (vampirism.curingTicks >= getMaxCuringTicks(entity)) {
                         if (!entity.isSilent()) {
-                            entity.level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), 
+                            entity.level.playSound(null, entity.getX(), entity.getY(), entity.getZ(),
                                     ModSounds.VAMPIRE_CURE_END.get(), entity.getSoundSource(), 1.0F, 1.0F);
                         }
                         power.clear();
@@ -242,7 +242,7 @@ public class VampirismData extends TypeSpecificData {
             });
         }
     }
-    
+
     private static int getMaxCuringTicks(LivingEntity entity) {
         return JojoModConfig.getCommonConfigInstance(entity.level.isClientSide()).vampirismCuringDuration.get();
     }
@@ -253,15 +253,24 @@ public class VampirismData extends TypeSpecificData {
 
     public void setNightVisionActive(boolean value) {
         isNightVisionActivated = value;
+        LivingEntity user = power.getUser();
+        if (!user.level.isClientSide()) {
+            if (isNightVisionActivated) {
+                user.addEffect(new EffectInstance(Effects.NIGHT_VISION, Integer.MAX_VALUE, 0, false, false, false));
+            }
+            else {
+                user.removeEffect(Effects.NIGHT_VISION);
+            }
+        }
     }
-    
+
     @Override
     public CompoundNBT writeNBT() {
         CompoundNBT nbt = new CompoundNBT();
         nbt.putBoolean("VampireFullPower", vampireFullPower);
         nbt.putInt("CuringTicks", curingTicks);
         nbt.putBoolean("NightVisionActive", isNightVisionActivated);
-        
+
         nbt.putBoolean("VampireHamonUser", vampireHamonUser);
         if (vampireHamonUser) {
             nbt.putFloat("HamonStrength", hamonStrengthLevel);
@@ -275,7 +284,7 @@ public class VampirismData extends TypeSpecificData {
         }
         return nbt;
     }
-    
+
     @Override
     public void readNBT(CompoundNBT nbt) {
         this.vampireFullPower = nbt.getBoolean("VampireFullPower");
@@ -286,18 +295,18 @@ public class VampirismData extends TypeSpecificData {
         this.hamonStrengthLevel = nbt.getFloat("HamonStrength");
         this.hamonTechnique.ifPresent(character -> nbt.putString("HamonTechnique", character.getRegistryName().toString()));
     }
-    
+
     @Override
     public void syncWithUserOnly(ServerPlayerEntity user) {
         lastBloodLevel = -999;
     }
-    
+
     public boolean refreshBloodLevel(int bloodLevel) {
         boolean bloodLevelChanged = this.lastBloodLevel != bloodLevel;
         this.lastBloodLevel = bloodLevel;
         return bloodLevelChanged || curingStageChanged;
     }
-    
+
     @Override
     public void syncWithTrackingOrUser(LivingEntity user, ServerPlayerEntity entity) {
         PacketManager.sendToClient(TrVampirismDataPacket.wasHamonUser(
