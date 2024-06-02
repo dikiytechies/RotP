@@ -36,7 +36,7 @@ public class ModVampirismActions {
             () -> new VampirismDarkAura(new NonStandAction.Builder().energyCost(25F).cooldown(300).ignoresPerformerStun()));
 
     public static final RegistryObject<VampirismAction> VAMPIRISM_NIGHT_VISION = ACTIONS.register("vampirism_night_vision",
-            () -> new VampirismVision(new NonStandAction.Builder().ignoresPerformerStun()));
+            () -> new VampirismVision(new NonStandAction.Builder().cooldown(10).ignoresPerformerStun()));
 
     public static final RegistryObject<VampirismAction> VAMPIRISM_HAMON_SUICIDE = ACTIONS.register("vampirism_hamon_suicide", 
             () -> new VampirismHamonSuicide(new NonStandAction.Builder().holdToFire(100, false).ignoresPerformerStun()));

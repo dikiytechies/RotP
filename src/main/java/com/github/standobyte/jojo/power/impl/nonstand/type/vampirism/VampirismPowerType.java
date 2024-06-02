@@ -143,19 +143,15 @@ public class VampirismPowerType extends NonStandPowerType<VampirismData> {
                     boolean maxHpIncreased = false;
                     if (effect == Effects.HEALTH_BOOST) {
                         missingHp = entity.getMaxHealth() - entity.getHealth();
-                        maxHpIncreased = amplifier >= 0 && 
+                        maxHpIncreased = amplifier >= 0 &&
                                 amplifier > Optional.ofNullable(entity.getEffect(Effects.HEALTH_BOOST)).map(EffectInstance::getAmplifier).orElse(-1);
                     }
-                    if (amplifier >= 0 && effect != Effects.NIGHT_VISION) {
+                    if (amplifier >= 0) {
                         entity.removeEffectNoUpdate(effect);
                         entity.addEffect(new EffectInstance(effect, Integer.MAX_VALUE, amplifier, false, false));
                     }
                     else {
                         entity.removeEffect(effect);
-                    }
-                    if (effect == Effects.NIGHT_VISION && power.getTypeSpecificData(ModPowers.VAMPIRISM.get()).map(vampirismP -> vampirismP.isNightVisionActive()).orElse(false)) {
-                        entity.removeEffectNoUpdate(effect);
-                        entity.addEffect(new EffectInstance(effect, Integer.MAX_VALUE, amplifier, false, false));
                     }
                     if (missingHp > -1) {
                         if (maxHpIncreased) {
@@ -186,13 +182,13 @@ public class VampirismPowerType extends NonStandPowerType<VampirismData> {
         if (effect == Effects.MOVEMENT_SPEED)                               return bloodLevel - 4;
         if (effect == Effects.DIG_SPEED)                                    return bloodLevel - 4;
         if (effect == Effects.JUMP)                                         return bloodLevel - 4;
-        if (effect == Effects.NIGHT_VISION)                                 return 0;
+        if (effect == Effects.NIGHT_VISION)                                 return power.getTypeSpecificData(ModPowers.VAMPIRISM.get()).map(VampirismData::isNightVisionActive).orElse(false) ? 0 : -1;
         return -1;
     }
-    
+
     private static final Set<Effect> EFFECTS = new HashSet<>();
     public static void initVampiricEffects() {
-        Collections.addAll(EFFECTS, 
+        Collections.addAll(EFFECTS,
                 Effects.HEALTH_BOOST,
                 Effects.REGENERATION,
                 Effects.DAMAGE_BOOST,
@@ -259,8 +255,8 @@ public class VampirismPowerType extends NonStandPowerType<VampirismData> {
                     int bloodLevel = bloodLevel(power, difficulty);
                     int curingStage = vampirism.getCuringStage();
                     Effect effect = event.getPotion();
-                    if (EFFECTS.contains(effect) && 
-                            getEffectAmplifier(effect, bloodLevel, difficulty, curingStage, power) == effectInstance.getAmplifier() && 
+                    if (EFFECTS.contains(effect) &&
+                            getEffectAmplifier(effect, bloodLevel, difficulty, curingStage, power) == effectInstance.getAmplifier() &&
                             !effectInstance.isVisible() && !effectInstance.showIcon()) {
                         event.setCanceled(true);
                     }

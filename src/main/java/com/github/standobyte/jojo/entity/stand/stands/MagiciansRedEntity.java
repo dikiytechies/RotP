@@ -25,7 +25,7 @@ public class MagiciansRedEntity extends StandEntity {
     @Override
     public boolean attackEntity(Supplier<Boolean> doAttack, StandEntityPunch punch, StandEntityTask task) {
         return DamageUtil.dealDamageAndSetOnFire(punch.target, 
-                entity -> super.attackEntity(doAttack, punch, task), 10, true);
+                entity -> super.attackEntity(doAttack, punch, task), 1, true);
     }
     
     @Override

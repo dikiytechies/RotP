@@ -57,6 +57,7 @@ import com.github.standobyte.jojo.network.packets.fromserver.ResolveEffectStartP
 import com.github.standobyte.jojo.network.packets.fromserver.SpawnParticlePacket;
 import com.github.standobyte.jojo.potion.HamonSpreadEffect;
 import com.github.standobyte.jojo.potion.IApplicableEffect;
+import com.github.standobyte.jojo.potion.StatusEffect;
 import com.github.standobyte.jojo.potion.VampireSunBurnEffect;
 import com.github.standobyte.jojo.power.IPower;
 import com.github.standobyte.jojo.power.IPower.PowerClassification;
@@ -97,6 +98,7 @@ import net.minecraft.block.HorizontalFaceBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.item.ItemEntity;
@@ -122,6 +124,7 @@ import net.minecraft.potion.Effects;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.stats.Stat;
 import net.minecraft.tileentity.AbstractFurnaceTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
@@ -156,6 +159,7 @@ import net.minecraftforge.event.AnvilUpdateEvent;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.ItemAttributeModifierEvent;
 import net.minecraftforge.event.ServerChatEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.TickEvent.PlayerTickEvent;
 import net.minecraftforge.event.TickEvent.WorldTickEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -191,6 +195,7 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import org.w3c.dom.Attr;
 
 //FIXME move all event handlers to their respective classes, leave the method links here
 @EventBusSubscriber(modid = JojoMod.MOD_ID)
@@ -203,6 +208,11 @@ public class GameplayEventHandler {
         entity.getCapability(LivingUtilCapProvider.CAPABILITY).ifPresent(cap -> {
             cap.tick();
         });
+        if (!entity.level.isClientSide()) {
+            if (entity.getEffect(ModStatusEffects.SLOWBURN.get()) != null && entity.getRemainingFireTicks() <= 0) {
+                entity.removeEffect(ModStatusEffects.SLOWBURN.get());
+            }
+        }
         NoKnockbackOnBlocking.tickAttribute(entity);
     }
 
@@ -242,14 +252,14 @@ public class GameplayEventHandler {
 //            liquidWalkingCap.ifPresent(cap -> {
 //                cap.tickWaterWalking();
 //            });
-            
+
             INonStandPower.getNonStandPowerOptional(player).ifPresent(power -> {
                 power.tick();
             });
             IStandPower.getStandPowerOptional(player).ifPresent(power -> {
                 MagiciansRedEntity.removeFireUnderPlayer(player, power);
                 power.tick();
-            }); 
+            });
             break;
         case END:
             INonStandPower.getNonStandPowerOptional(player).ifPresent(power -> {
@@ -257,7 +267,7 @@ public class GameplayEventHandler {
             });
             IStandPower.getStandPowerOptional(player).ifPresent(power -> {
                 power.postTick();
-            }); 
+            });
             break;
         }
     }
@@ -345,7 +355,7 @@ public class GameplayEventHandler {
 //            cutOutHands((PaintingEntity) event.getEntity());
 //        }
     }
-    
+
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void onUseItem(PlayerInteractEvent.RightClickItem event) {
         if (ModInteractionUtil.isSquidInkPasta(event.getItemStack())) {
@@ -355,7 +365,7 @@ public class GameplayEventHandler {
             });
         }
     }
-    
+
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void onBowDrawStart(LivingEntityUseItemEvent.Start event) {
         if (BowChargeEffectInstance.itemFits(event.getItem())) {
@@ -387,7 +397,7 @@ public class GameplayEventHandler {
             InkPastaItem.onEaten(event.getEntityLiving());
         }
     }
-    
+
     @SubscribeEvent
     public static void itemAttributeModifiers(ItemAttributeModifierEvent event) {
         GlovesSpeedEnchantment.addAtrributeModifiersFromEvent(event.getItemStack(), event);
@@ -693,7 +703,7 @@ public class GameplayEventHandler {
 //                    (float) target.getArmorValue(), (float) target.getAttributeValue(Attributes.ARMOR_TOUGHNESS)));
 //        }
 //    }
-
+    
 
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public static void resolveOnTakingDamage(LivingDamageEvent event) {
@@ -723,9 +733,9 @@ public class GameplayEventHandler {
         float dmgAmount = event.getAmount();
         LivingEntity target = event.getEntityLiving();
         bleed(dmgSource, dmgAmount, target);
-        
+
         StandType.onHurtByStand(dmgSource, dmgAmount, target);
-        
+
         if (target instanceof StandEntity) {
             StandEntity standTarget = (StandEntity) target;
             if (standTarget.isCurrentAttackBlocked()) {
@@ -734,11 +744,11 @@ public class GameplayEventHandler {
         }
         
         for (PowerClassification powerClassification : PowerClassification.values()) {
-            IPower.getPowerOptional(target, powerClassification).ifPresent(power -> 
+            IPower.getPowerOptional(target, powerClassification).ifPresent(power ->
             power.onUserGettingAttacked(dmgSource, dmgAmount));
         }
     }
-    
+
     @SubscribeEvent
     public static void clNoBobOnHurt(LivingAttackEvent event) {
         LivingEntity target = event.getEntityLiving();
@@ -932,6 +942,10 @@ public class GameplayEventHandler {
             }
             if (effectInstance.getEffect() == ModStatusEffects.RESOLVE.get() && entity instanceof ServerPlayerEntity) {
                 PacketManager.sendToClient(new ResolveEffectStartPacket(effectInstance.getAmplifier()), (ServerPlayerEntity) entity);
+            }
+            if (effectInstance.getEffect() == ModStatusEffects.SLOWBURN.get()) {
+                int ticksBack = effectInstance.getAmplifier() < 6? effectInstance.getDuration() / 20 / (7 - effectInstance.getAmplifier()): 0;
+                entity.setRemainingFireTicks(Math.max(entity.getRemainingFireTicks(), effectInstance.getDuration() + ticksBack));
             }
         }
     }
@@ -1345,7 +1359,7 @@ public class GameplayEventHandler {
             player.removeEffect(ModStatusEffects.HAMON_SHOCK.get());
         }
     }
-    
+
     @SubscribeEvent
     public static void anvilUnrepairableItems(AnvilUpdateEvent event) {
         GlovesItem.combineInAnvil(event);

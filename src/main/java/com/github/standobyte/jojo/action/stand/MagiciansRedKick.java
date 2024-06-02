@@ -8,11 +8,14 @@ import com.github.standobyte.jojo.entity.damaging.projectile.ownerbound.MRRedBin
 import com.github.standobyte.jojo.entity.stand.StandEntity;
 import com.github.standobyte.jojo.entity.stand.StandEntityTask;
 import com.github.standobyte.jojo.init.ModSounds;
+import com.github.standobyte.jojo.init.ModStatusEffects;
 import com.github.standobyte.jojo.power.impl.stand.IStandPower;
 import com.github.standobyte.jojo.util.mc.damage.StandEntityDamageSource;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
@@ -43,8 +46,9 @@ public class MagiciansRedKick extends StandEntityHeavyAttack {
         });
         super.setAction(standPower, standEntity, ticks, phase, target);
     }
-    
+
     private static final double SLIDE_DISTANCE = 3;
+
     @Override
     public void standTickWindup(World world, StandEntity standEntity, IStandPower userPower, StandEntityTask task) {
         int ticksLeft = task.getTicksLeft();
@@ -54,15 +58,13 @@ public class MagiciansRedKick extends StandEntityHeavyAttack {
             if (targetPos != null) {
                 slideVec = targetPos.subtract(standEntity.getEyePosition(1.0F));
                 slideVec = slideVec.normalize().scale(MathHelper.clamp(slideVec.length() - standEntity.getBbWidth(), 0, SLIDE_DISTANCE));
-            }
-            else {
+            } else {
                 slideVec = standEntity.getLookAngle().scale(SLIDE_DISTANCE);
             }
             standEntity.setDeltaMovement(slideVec);
-        }
-        else if (ticksLeft == 1) {
+        } else if (ticksLeft == 1) {
             standEntity.setDeltaMovement(Vector3d.ZERO);
-            
+
             if (!world.isClientSide()) {
                 MagiciansRedRedBind.getLandedRedBind(standEntity).ifPresent(redBind -> {
                     if (redBind.isInKickAttack()) {
@@ -78,14 +80,14 @@ public class MagiciansRedKick extends StandEntityHeavyAttack {
         return super.punchEntity(stand, target, dmgSource)
                 .multiplyAddKnockback(1.2F);
     }
-    
+
     @Override
     protected boolean standMovesByItself(IStandPower standPower, StandEntity standEntity) {
         Phase phase = standEntity.getCurrentTaskPhase().get();
         return phase == Phase.WINDUP && standEntity.getCurrentTask().map(StandEntityTask::getTicksLeft).get() <= 2
                 || phase == Phase.PERFORM || phase == Phase.RECOVERY;
     }
-    
+
     @Override
     public String getTranslationKey(IStandPower power, ActionTarget target) {
         String key = super.getTranslationKey(power, target);
@@ -94,12 +96,30 @@ public class MagiciansRedKick extends StandEntityHeavyAttack {
         }
         return key;
     }
-    
+
     @Override
     protected SoundEvent getShout(LivingEntity user, IStandPower power, ActionTarget target, boolean wasActive) {
         if (power.isActive() && MagiciansRedRedBind.getLandedRedBind((StandEntity) power.getStandManifestation()).isPresent()) {
             return ModSounds.AVDOL_HELL_2_U.get();
         }
         return super.getShout(user, power, target, wasActive);
+    }
+
+    @Override
+    public void standPerform(World world, StandEntity standEntity, IStandPower userPower, StandEntityTask task) {
+        super.standPerform(world, standEntity, userPower, task);
+        if (task.getTarget().getEntity() instanceof LivingEntity) {
+            LivingEntity target = (LivingEntity) task.getTarget().getEntity();
+            if (((LivingEntity) task.getTarget().getEntity()).getEffect(ModStatusEffects.SLOWBURN.get()) != null) {
+                if (target.getEffect(ModStatusEffects.SLOWBURN.get()) != null) {
+                    float burnTickDamage = target.getEffect(ModStatusEffects.SLOWBURN.get()).getAmplifier() < 6 ? 1 / (target.getEffect(ModStatusEffects.SLOWBURN.get()).getAmplifier() + 1) : target.getEffect(ModStatusEffects.SLOWBURN.get()).getAmplifier() > 6 ? target.getEffect(ModStatusEffects.SLOWBURN.get()).getAmplifier() - 6 : 1;
+                    target.hurt(new DamageSource("onFire").bypassArmor(), (float) target.getEffect(ModStatusEffects.SLOWBURN.get()).getDuration() / 20 * burnTickDamage);
+                    target.clearFire();
+                    target.removeEffect(ModStatusEffects.SLOWBURN.get());
+                }
+            } else {
+                target.addEffect(new EffectInstance(ModStatusEffects.SLOWBURN.get(), 15 * 20, 6, false, false, true));
+            }
+        }
     }
 }
