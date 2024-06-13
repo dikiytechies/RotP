@@ -466,7 +466,6 @@ public class ModStandsInit {
 
     public static final RegistryObject<StandEntityHeavyAttack> MAGICIANS_RED_KICK = ACTIONS.register("magicians_red_kick", 
             () -> new MagiciansRedKick(new StandEntityHeavyAttack.Builder()
-                    .resolveLevelToUnlock(1)
                     .punchSound(ModSounds.MAGICIANS_RED_KICK_HEAVY)
                     .partsRequired(StandPart.LEGS)));
 
@@ -479,13 +478,14 @@ public class ModStandsInit {
     
     public static final RegistryObject<MagiciansRedFlameBurst> MAGICIANS_RED_FLAME_BURST = ACTIONS.register("magicians_red_flame_burst", 
             () -> new MagiciansRedFlameBurst(new StandEntityAction.Builder().holdType()
+                    .resolveLevelToUnlock(2)
                     .staminaCostTick(3)
                     .standOffsetFront().standPose(MagiciansRedFlameBurst.FLAME_BURST_POSE)
                     .partsRequired(StandPart.MAIN_BODY)));
     
     public static final RegistryObject<MagiciansRedFireball> MAGICIANS_RED_FIREBALL = ACTIONS.register("magicians_red_fireball", 
             () -> new MagiciansRedFireball(new StandEntityAction.Builder().staminaCost(75).standPerformDuration(3)
-                    .resolveLevelToUnlock(2)
+                    .resolveLevelToUnlock(1)
                     .standPose(MagiciansRedFlameBurst.FLAME_BURST_POSE).standSound(ModSounds.MAGICIANS_RED_FIREBALL)
                     .partsRequired(StandPart.MAIN_BODY)));
     
