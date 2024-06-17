@@ -31,6 +31,7 @@ import net.minecraftforge.event.ForgeEventFactory;
 
 public class MRFlameEntity extends ModdedProjectileEntity {
     private Vector3d startingPos = null;
+    //test
     
     public MRFlameEntity(LivingEntity shooter, World world) {
         super(ModEntityTypes.MR_FLAME.get(), shooter, world);
