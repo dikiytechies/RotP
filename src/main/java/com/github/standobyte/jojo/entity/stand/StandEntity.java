@@ -12,6 +12,7 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 
 import com.github.standobyte.jojo.JojoModConfig;
+import com.github.standobyte.jojo.action.ActionConditionResult;
 import com.github.standobyte.jojo.action.ActionTarget;
 import com.github.standobyte.jojo.action.ActionTarget.TargetType;
 import com.github.standobyte.jojo.action.stand.CrazyDiamondRestoreTerrain;
@@ -174,6 +175,7 @@ public class StandEntity extends LivingEntity implements IStandManifestation, IE
     private BarrageSwingsHolder<?, ?> barrageSwings;
     private final BarrageHitSoundHandler barrageSounds;
 
+    public float lastRenderTick = 0;
     public float lastMotionTiltTick = -1;
 //    public Vector3d motionVec = Vector3d.ZERO;
 //    public double motionDist = 0;
@@ -181,6 +183,8 @@ public class StandEntity extends LivingEntity implements IStandManifestation, IE
     
     public Vector3d prevTiltVec = Vector3d.ZERO;
     public Vector3d tiltVec = Vector3d.ZERO;
+    
+    public float outlineTicks = 0;
     
     public static final DataParameter<Optional<ResourceLocation>> DATA_PARAM_STAND_SKIN = EntityDataManager.defineId(StandEntity.class, 
             (IDataSerializer<Optional<ResourceLocation>>) ModDataSerializers.OPTIONAL_RES_LOC.get().getSerializer());
@@ -536,6 +540,21 @@ public class StandEntity extends LivingEntity implements IStandManifestation, IE
     }
     
     protected void addSummonParticles() {}
+    
+    public int getUnsummonDuration() {
+        LivingEntity user = getUser();
+        boolean resolve = user != null && user.hasEffect(ModStatusEffects.RESOLVE.get());
+        if (resolve) {
+            return isArmsOnlyMode() ? 3 : 5;
+        }
+        else {
+            int ticks = isArmsOnlyMode() ? 7 : 10;
+            double staminaDebuff = getStaminaCondition();  // 0.25 ~ 1
+            staminaDebuff = (staminaDebuff * 2 + 1) / 3.0; // 0.5  ~ 1
+            if (staminaDebuff < 1) ticks = MathHelper.ceil((double) ticks / staminaDebuff);
+            return ticks;
+        }
+    }
 
 
 
@@ -1914,7 +1933,7 @@ public class StandEntity extends LivingEntity implements IStandManifestation, IE
     public void addProjectile(DamagingEntity projectile) {
         if (!level.isClientSide() && !projectile.isAddedToWorld()) {
             projectile.setDamageFactor(projectile.getDamageFactor() * (float) getAttackDamage() / 8);
-            projectile.setSpeedFactor(projectile.getSpeedFactor() * (float) getAttackSpeed() / 8);
+            projectile.setSpeedFactor(projectile.getSpeedFactor() * getAttackSpeed() / 8);
             level.addFreshEntity(projectile);
         }
     }
@@ -2001,6 +2020,10 @@ public class StandEntity extends LivingEntity implements IStandManifestation, IE
 
     protected boolean shouldHaveNoPhysics() {
         return standCanHaveNoPhysics() && !isManuallyControlled() && !isRemotePositionFixed();
+    }
+    
+    public ActionConditionResult canBeManuallyControlled() {
+        return ActionConditionResult.POSITIVE;
     }
 
     public void setManualControl(boolean manualControl, boolean fixRemotePosition) {

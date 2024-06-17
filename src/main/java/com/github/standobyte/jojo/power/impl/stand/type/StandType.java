@@ -500,6 +500,9 @@ public abstract class StandType<T extends StandStats> extends ForgeRegistryEntry
     
     public static enum StandSurvivalGameplayPool {
         PLAYER_ARROW,
-        NPC_ENCOUNTER
+        NON_ARROW, // Requiems, C-Moon, Made in Heaven, Acts depending on their implementation, etc.
+        NPC_ENCOUNTER,
+        ANIMAL,
+        OTHER
     }
 }

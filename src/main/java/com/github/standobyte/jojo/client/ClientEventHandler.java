@@ -8,8 +8,11 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
+
+import javax.annotation.Nullable;
 
 import com.github.standobyte.jojo.JojoMod;
 import com.github.standobyte.jojo.action.stand.CrazyDiamondBlockCheckpointMake;
@@ -21,11 +24,14 @@ import com.github.standobyte.jojo.capability.entity.hamonutil.EntityHamonChargeC
 import com.github.standobyte.jojo.capability.entity.hamonutil.ProjectileHamonChargeCapProvider;
 import com.github.standobyte.jojo.capability.world.WorldUtilCapProvider;
 import com.github.standobyte.jojo.client.controls.ControlScheme;
+import com.github.standobyte.jojo.client.particle.custom.FirstPersonHamonAura;
+import com.github.standobyte.jojo.client.polaroid.PhotosCache;
 import com.github.standobyte.jojo.client.polaroid.PolaroidHelper;
 import com.github.standobyte.jojo.client.render.block.overlay.TranslucentBlockRenderHelper;
 import com.github.standobyte.jojo.client.render.entity.layerrenderer.FrozenLayer;
 import com.github.standobyte.jojo.client.render.entity.layerrenderer.GlovesLayer;
 import com.github.standobyte.jojo.client.render.entity.layerrenderer.HamonBurnLayer;
+import com.github.standobyte.jojo.client.render.item.InventoryItemHighlight;
 import com.github.standobyte.jojo.client.render.world.shader.ShaderEffectApplier;
 import com.github.standobyte.jojo.client.resources.CustomResources;
 import com.github.standobyte.jojo.client.sound.StandOstSound;
@@ -46,6 +52,8 @@ import com.github.standobyte.jojo.init.power.non_stand.hamon.ModHamonActions;
 import com.github.standobyte.jojo.init.power.stand.ModStands;
 import com.github.standobyte.jojo.init.power.stand.ModStandsInit;
 import com.github.standobyte.jojo.item.OilItem;
+import com.github.standobyte.jojo.modcompat.OptionalDependencyHelper;
+import com.github.standobyte.jojo.network.packets.fromserver.ServerIdPacket;
 import com.github.standobyte.jojo.power.IPower;
 import com.github.standobyte.jojo.power.IPower.PowerClassification;
 import com.github.standobyte.jojo.power.impl.nonstand.INonStandPower;
@@ -56,7 +64,6 @@ import com.github.standobyte.jojo.power.impl.stand.StandUtil;
 import com.github.standobyte.jojo.util.mc.MCUtil;
 import com.github.standobyte.jojo.util.mc.OstSoundList;
 import com.github.standobyte.jojo.util.mc.reflection.ClientReflection;
-import com.github.standobyte.jojo.util.mod.ModInteractionUtil;
 import com.google.common.base.MoreObjects;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -107,14 +114,17 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.client.ForgeHooksClient;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent.DrawScreenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent.InitGuiEvent;
+import net.minecraftforge.client.event.RenderArmEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderHandEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.RenderNameplateEvent;
+import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -252,6 +262,15 @@ public class ClientEventHandler {
             });
         }
     }
+    
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onRenderPlayer(RenderPlayerEvent.Pre event) {
+        if (mc.player != event.getPlayer()) {
+            event.getPlayer().getCapability(LivingUtilCapProvider.CAPABILITY).ifPresent(cap -> {
+                cap.climbLimitPlayerHeadRot();
+            });
+        }
+    }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRenderTick(RenderTickEvent event) {
@@ -263,6 +282,9 @@ public class ClientEventHandler {
             if (mc.player.isAlive()) {
                 timeStopHandler.setConstantPartialTick(clientTimer);
                 
+                mc.player.getCapability(LivingUtilCapProvider.CAPABILITY).ifPresent(cap -> {
+                    cap.climbLimitPlayerHeadRot();
+                });
                 mc.player.getCapability(ClientPlayerUtilCapProvider.CAPABILITY).ifPresent(cap -> {
                     cap.applyLockedRotation();
                 });
@@ -289,16 +311,20 @@ public class ClientEventHandler {
                         entity.getCapability(ProjectileHamonChargeCapProvider.CAPABILITY).ifPresent(cap -> cap.tick());
                         entity.getCapability(EntityHamonChargeCapProvider.CAPABILITY).ifPresent(cap -> cap.tick());
                     });
+                    
+                    FirstPersonHamonAura.getInstance().tick();
+                    InventoryItemHighlight.tick();
                 }
                 
                 tickResolveEffect();
+                PhotosCache.tick();
                 break;
             case END:
                 ShaderEffectApplier.getInstance().shaderTick();
                 
                 // FIXME make stand actions clickable when player hands are busy
-                if (mc.level != null && mc.player != null && mc.player.getVehicle() != null
-                        && mc.player.getVehicle().getType() == ModEntityTypes.LEAVES_GLIDER.get()) {
+                if (mc.level != null && mc.player != null && (
+                        mc.player.getVehicle() != null && mc.player.getVehicle().getType() == ModEntityTypes.LEAVES_GLIDER.get())) {
                     ClientReflection.setHandsBusy(mc.player, true);
                 }
                 break;
@@ -410,7 +436,7 @@ public class ClientEventHandler {
 
 
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
+    @SubscribeEvent(priority = EventPriority.LOW)
     public void zoom(EntityViewRenderEvent.FOVModifier event) {
         if (isZooming) {
             zoomModifier = Math.min(zoomModifier + mc.getDeltaFrameTime() / 3F, 60);
@@ -424,13 +450,21 @@ public class ClientEventHandler {
     }
     
     @SubscribeEvent
-    public static void cameraSetup(EntityViewRenderEvent.CameraSetup event) {
+    public void cameraSetup(EntityViewRenderEvent.CameraSetup event) {
         PolaroidHelper.pictureCameraSetup(event);
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public void photoFOV(EntityViewRenderEvent.FOVModifier event) {
+        if (PolaroidHelper.isTakingPhoto()) {
+            event.setFOV(70);
+        }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void disableFoodBar(RenderGameOverlayEvent.Pre event) {
-        if (event.getType() == FOOD && !ModInteractionUtil.isModLoaded("vampirism") || event.getType() == AIR) {
+        boolean isVampirismModVampire = OptionalDependencyHelper.vampirism().isEntityVampire(mc.player);
+        if (event.getType() == FOOD && !isVampirismModVampire || event.getType() == AIR) {
             INonStandPower.getNonStandPowerOptional(mc.player).ifPresent(power -> {
                 if (power.getType() == ModPowers.VAMPIRISM.get()) {
                     event.setCanceled(true);
@@ -540,8 +574,11 @@ public class ClientEventHandler {
                 if (!player.isInvisible()) {
                     INonStandPower.getNonStandPowerOptional(player).ifPresent(power -> {
                         ActionsOverlayGui hud = ActionsOverlayGui.getInstance();
-                        if ((hud.isActionSelectedAndEnabled(ModHamonActions.JONATHAN_OVERDRIVE_BARRAGE.get(), 
-                                ModHamonActions.JONATHAN_SUNLIGHT_YELLOW_OVERDRIVE_BARRAGE.get()))
+                        if ((hud.isActionSelectedAndEnabled(
+                                ModHamonActions.JONATHAN_OVERDRIVE_BARRAGE.get(), 
+                                ModHamonActions.JONATHAN_SUNLIGHT_YELLOW_OVERDRIVE_BARRAGE.get(),
+                                ModHamonActions.HAMON_WALL_CLIMBING.get())
+                                || player.getCapability(LivingUtilCapProvider.CAPABILITY).map(cap -> cap.isWallClimbing()).orElse(false))
                                 && MCUtil.isHandFree(player, Hand.MAIN_HAND) && MCUtil.isHandFree(player, Hand.OFF_HAND)) {
                             renderHand(Hand.OFF_HAND, event.getMatrixStack(), event.getBuffers(), event.getLight(), 
                                     event.getPartialTicks(), event.getInterpolatedPitch(), player);
@@ -557,11 +594,11 @@ public class ClientEventHandler {
                 }
             }
             
-//            if (!item.isEmpty() && item.getItem() == ModItems.PHOTO.get()) {
-//                event.setCanceled(true);
-//                PolaroidHelper.renderPhotoInHand(event.getMatrixStack(), event.getBuffers(), event.getLight(), 
-//                        event.getEquipProgress(), MCUtil.getHandSide(player, hand), event.getSwingProgress(), item);
-//            }
+            if (!item.isEmpty() && item.getItem() == ModItems.PHOTO.get()) {
+                event.setCanceled(true);
+                PolaroidHelper.renderPhotoInHand(event.getMatrixStack(), event.getBuffers(), event.getLight(), 
+                        event.getEquipProgress(), MCUtil.getHandSide(player, hand), event.getSwingProgress(), item, event.getPartialTicks());
+            }
         }
     }
     
@@ -612,6 +649,14 @@ public class ClientEventHandler {
         case OFF_HAND:
             offHandRendered = true;
             break;
+        }
+    }
+    
+    @SubscribeEvent
+    public void onHandRenderFinal(RenderArmEvent event) {
+        Hand hand = event.getArm() == event.getPlayer().getMainArm() ? Hand.MAIN_HAND : Hand.OFF_HAND;
+        if (MCUtil.isHandFree(event.getPlayer(), hand)) {
+            FirstPersonHamonAura.getInstance().renderParticles(event.getPoseStack(), event.getMultiBufferSource(), event.getArm());
         }
     }
     
@@ -939,5 +984,30 @@ public class ClientEventHandler {
             event.getEntityMounting().getCapability(ClientPlayerUtilCapProvider.CAPABILITY).ifPresent(
                     cap -> cap.setVehicleType(mountedType));
         }
+    }
+    
+    
+
+    private UUID serverId;
+    private boolean isLoggedIn = false;
+    
+    public void setServerId(ServerIdPacket packet) {
+        serverId = packet.serverId;
+    }
+    
+    @Nullable
+    public UUID getServerId() {
+        return isLoggedIn ? serverId : null;
+    }
+    
+    @SubscribeEvent
+    public void clientLoggedIn(ClientPlayerNetworkEvent.LoggedInEvent event) {
+        isLoggedIn = true;
+    }
+    
+    @SubscribeEvent
+    public void clientLoggedOut(ClientPlayerNetworkEvent.LoggedOutEvent event) {
+        PhotosCache.onLogOut(serverId);
+        isLoggedIn = false;
     }
 }

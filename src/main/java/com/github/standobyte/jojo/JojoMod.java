@@ -14,6 +14,7 @@ import com.github.standobyte.jojo.init.ModDataSerializers;
 import com.github.standobyte.jojo.init.ModEnchantments;
 import com.github.standobyte.jojo.init.ModEntityAttributes;
 import com.github.standobyte.jojo.init.ModEntityTypes;
+import com.github.standobyte.jojo.init.ModFluids;
 import com.github.standobyte.jojo.init.ModGamerules;
 import com.github.standobyte.jojo.init.ModItems;
 import com.github.standobyte.jojo.init.ModLootModifierSerializers;
@@ -35,6 +36,7 @@ import com.github.standobyte.jojo.power.impl.stand.type.StandType;
 import com.github.standobyte.jojo.util.ForgeBusEventSubscriber;
 import com.github.standobyte.jojo.util.mod.JojoModVersion;
 
+import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.item.ItemGroup;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -82,6 +84,7 @@ public class JojoMod {
         ModStatusEffects.EFFECTS.register(modEventBus);
         ModEnchantments.ENCHANTMENTS.register(modEventBus);
         ModEntityTypes.ENTITIES.register(modEventBus);
+        ModFluids.FLUIDS.register(modEventBus);
         ModLootModifierSerializers.LOOT_MODIFIER_SERIALIZERS.register(modEventBus);
         ModPaintings.PAINTINGS.register(modEventBus);
         ModParticles.PARTICLES.register(modEventBus);
@@ -125,6 +128,8 @@ public class JojoMod {
             
             ModGamerules.load();
         });
+        
+        Attributes.ATTACK_DAMAGE.setSyncable(true);
     }
     
     private void interMod(InterModEnqueueEvent event) {

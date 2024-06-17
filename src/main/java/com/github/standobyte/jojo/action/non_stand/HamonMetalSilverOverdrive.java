@@ -1,10 +1,8 @@
 package com.github.standobyte.jojo.action.non_stand;
 
-import com.github.standobyte.jojo.action.Action;
 import com.github.standobyte.jojo.action.ActionConditionResult;
 import com.github.standobyte.jojo.action.ActionTarget;
 import com.github.standobyte.jojo.init.ModParticles;
-import com.github.standobyte.jojo.init.power.non_stand.hamon.ModHamonActions;
 import com.github.standobyte.jojo.power.impl.nonstand.INonStandPower;
 import com.github.standobyte.jojo.power.impl.nonstand.type.hamon.HamonData;
 import com.github.standobyte.jojo.util.mc.MCUtil;
@@ -23,14 +21,6 @@ public class HamonMetalSilverOverdrive extends HamonOverdrive {
     }
     
     @Override
-    protected Action<INonStandPower> replaceAction(INonStandPower power, ActionTarget target) {
-        if (target.getEntity() instanceof LivingEntity && !targetedByMSO(target)) {
-            return ModHamonActions.HAMON_OVERDRIVE.get();
-        }
-        return super.replaceAction(power, target);
-    }
-    
-    @Override
     protected ActionConditionResult checkTarget(ActionTarget target, LivingEntity user, INonStandPower power) {
         return ActionConditionResult.noMessage(targetedByMSO(target));
     }
@@ -44,38 +34,24 @@ public class HamonMetalSilverOverdrive extends HamonOverdrive {
     	return false;
     }
     
-//    @Override
-//    @Nullable
-//    protected SoundEvent getShout(LivingEntity user, INonStandPower power, ActionTarget target, boolean wasActive) {
-//        ItemStack heldItemStack = user.getMainHandItem();
-//        if (heldItemStack.getItem() instanceof SwordItem
-//                && heldItemStack.hasCustomHoverName()
-//                && "pluck".equals(heldItemStack.getHoverName().getString().toLowerCase())) {
-//            return ModSounds.JONATHAN_PLUCK_SWORD.get();
-//        }
-//        return null;
-//    }
-    
     @Override
     protected boolean dealDamage(ActionTarget target, LivingEntity targetEntity, float dmgAmount, LivingEntity user, INonStandPower power, HamonData hamon) {
     	float ratio = getDamageMultiplier(targetEntity);
         return DamageUtil.dealHamonDamage(targetEntity, ratio * dmgAmount, user, null, attack -> attack.hamonParticle(ModParticles.HAMON_SPARK_SILVER.get()));
     }
     
-    
-    
     private static float getDamageMultiplier(LivingEntity targetEntity) {
         float mult = 1;
         
         for (int i = 0; i < 4; i++) {
             if (!targetEntity.getItemBySlot(EquipmentSlotType.byTypeAndIndex(EquipmentSlotType.Group.ARMOR, i)).isEmpty()) {
-                mult += 0.5F;
+                mult += 0.2F;
             }
         }
         for (Hand hand : Hand.values()) {
             ItemStack heldStack = targetEntity.getItemInHand(hand);
             if (MCUtil.isItemWeapon(heldStack)) {
-                mult += 0.5F;
+                mult += 0.2F;
                 break;
             }
         }
