@@ -57,6 +57,6 @@ public class ModVampirismActions {
                             VAMPIRISM_NIGHT_VISION.get()},
                     
                     VAMPIRISM_BLOOD_DRAIN.get()
-                    ));
+                    ).withColor(VampirismPowerType.COLOR));
 
 }

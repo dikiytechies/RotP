@@ -31,8 +31,8 @@ public class ModStatusEffects {
     
     public static final RegistryObject<FreezeEffect> FREEZE = EFFECTS.register("freeze", 
             () -> new FreezeEffect(EffectType.HARMFUL, 0xD6D6FF));
-    
-    public static final RegistryObject<UndeadRegenerationEffect> UNDEAD_REGENERATION = EFFECTS.register("undead_regeneration", 
+
+    public static final RegistryObject<UndeadRegenerationEffect> UNDEAD_REGENERATION = EFFECTS.register("undead_regeneration",
             () -> new UndeadRegenerationEffect(EffectType.BENEFICIAL, Effects.REGENERATION.getColor()));
     
     public static final RegistryObject<VampireSunBurnEffect> VAMPIRE_SUN_BURN = EFFECTS.register("sun_burn", 
@@ -40,7 +40,7 @@ public class ModStatusEffects {
 
     public static final RegistryObject<Effect> FEAR_EFFECT = EFFECTS.register("fear",
             () -> new FearEffect().setUncurable());
-    
+
     public static final RegistryObject<HamonSpreadEffect> HAMON_SPREAD = EFFECTS.register("hamon_spread", 
             () -> new HamonSpreadEffect(EffectType.HARMFUL, 0xFFC10A).setUncurable());
     
@@ -92,7 +92,7 @@ public class ModStatusEffects {
             () -> new ImmobilizeEffect(0xF7B731));
     public static final RegistryObject<Effect> SLOWBURN = EFFECTS.register("slowburn",
             () -> new SlowBurnEffect().setUncurable());
-    
+
 //    public static final RegistryObject<Effect> STAND_SEALING = EFFECTS.register("stand_sealing", 
 //            () -> new StatusEffect(EffectType.HARMFUL, 0xCACAD8)); // TODO Stand Sealing effect
     
