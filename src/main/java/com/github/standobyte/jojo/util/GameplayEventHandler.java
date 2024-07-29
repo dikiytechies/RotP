@@ -31,6 +31,7 @@ import com.github.standobyte.jojo.capability.entity.hamonutil.ProjectileHamonCha
 import com.github.standobyte.jojo.client.ClientUtil;
 import com.github.standobyte.jojo.enchantment.GlovesSpeedEnchantment;
 import com.github.standobyte.jojo.entity.damaging.projectile.CDBloodCutterEntity;
+import com.github.standobyte.jojo.entity.damaging.projectile.MRFlameEntity;
 import com.github.standobyte.jojo.entity.stand.StandEntity;
 import com.github.standobyte.jojo.entity.stand.stands.MagiciansRedEntity;
 import com.github.standobyte.jojo.init.ModBlocks;
@@ -209,10 +210,17 @@ public class GameplayEventHandler {
             cap.tick();
         });
         if (!entity.level.isClientSide()) {
-            if (entity.getEffect(ModStatusEffects.SLOWBURN.get()) != null && entity.getRemainingFireTicks() <= 0) {
-                entity.removeEffect(ModStatusEffects.SLOWBURN.get());
+            // it should stop the fire for a while but not clear all the stacks idk why it keeps target on fire but nothing else
+            /*if (entity.getEffect(ModStatusEffects.BINDED.get()) != null) {
+                int effectDuration = entity.getEffect(ModStatusEffects.BINDED.get()).getDuration();
+                entity.setRemainingFireTicks(-20);
+                if (entity.getEffect(ModStatusEffects.SLOWBURN.get()) != null) entity.addEffect(new EffectInstance(ModStatusEffects.SLOWBURN.get(), entity.getEffect(ModStatusEffects.SLOWBURN.get()).getDuration() + effectDuration, entity.getEffect(ModStatusEffects.SLOWBURN.get()).getAmplifier(),false, false, true));
+            } else {*/
+                if ((entity.getEffect(ModStatusEffects.SLOWBURN.get()) != null || entity.getCapability(LivingUtilCapProvider.CAPABILITY).map(burn -> burn.getBurnRate()).orElse(0.0f) > 0.0f) && entity.getRemainingFireTicks() <= 0) {
+                    entity.getCapability(LivingUtilCapProvider.CAPABILITY).ifPresent(burn -> burn.setBurnRate(0.0f));
+                    entity.removeEffect(ModStatusEffects.SLOWBURN.get());
+                }
             }
-        }
         NoKnockbackOnBlocking.tickAttribute(entity);
     }
 

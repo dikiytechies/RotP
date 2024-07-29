@@ -16,8 +16,8 @@ import javax.annotation.Nullable;
 public class SlowBurnEffect extends StatusEffect {
     public SlowBurnEffect() {
         super(EffectType.HARMFUL, 0xee5d2d);
-        addAttributeModifier(Attributes.ARMOR, "93b39a68-5597-4b5f-a9c7-890d5415ba8d", -1, AttributeModifier.Operation.ADDITION);
-        addAttributeModifier(Attributes.ARMOR_TOUGHNESS, "93b39a68-5597-4b5f-a9c7-890d5415ba8d", -0.5, AttributeModifier.Operation.ADDITION);
+        addAttributeModifier(Attributes.ARMOR, "93b39a68-5597-4b5f-a9c7-890d5415ba8d", -0.5, AttributeModifier.Operation.ADDITION);
+        addAttributeModifier(Attributes.ARMOR_TOUGHNESS, "93b39a68-5597-4b5f-a9c7-890d5415ba8d", -0.25, AttributeModifier.Operation.ADDITION);
     }
 
     @Override

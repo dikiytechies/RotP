@@ -62,7 +62,7 @@ public class LivingUtilCap {
     public boolean didStackKnockbackInstead;
     @Nullable private Vector3d blockImpactKbVec;
     private double blockImpactMultiplier;
-    
+    private float burnRate;
     private Collection<StandEffectInstance> standEffectsTargetedBy = new LinkedList<>();
     
     public boolean hasUsedTimeStopToday = false;
@@ -538,6 +538,12 @@ public class LivingUtilCap {
     public DyeColor getBroochWorn(int index) {
         return ladybugBroochesColored[index];
     }
+
+    public float getBurnRate() { return burnRate; }
+
+    public void addBurnRate(float amount) { burnRate += amount; }
+
+    public void setBurnRate(float amount) { burnRate = amount; }
     
     
     
@@ -569,6 +575,7 @@ public class LivingUtilCap {
     public CompoundNBT toNBT() {
         CompoundNBT nbt = new CompoundNBT();
         nbt.putFloat("HamonSpread", receivedHamonDamage);
+        nbt.putFloat("BurnRate", burnRate);
         MCUtil.nbtPutVec3d(nbt, "BlockImpactVec", blockImpactKbVec);
         nbt.putBoolean("UsedTimeStop", hasUsedTimeStopToday);
         if (preHypnosisOwner != null) {
@@ -590,6 +597,7 @@ public class LivingUtilCap {
     public void fromNBT(CompoundNBT nbt) {
         receivedHamonDamage = nbt.getFloat("HamonSpread");
         blockImpactKbVec = MCUtil.nbtGetVec3d(nbt, "BlockImpactVec");
+        burnRate = nbt.getFloat("BurnRate");
         hasUsedTimeStopToday = nbt.getBoolean("UsedTimeStop");
         if (nbt.hasUUID("PreHypnosisOwner")) {
             preHypnosisOwner = nbt.getUUID("PreHypnosisOwner");

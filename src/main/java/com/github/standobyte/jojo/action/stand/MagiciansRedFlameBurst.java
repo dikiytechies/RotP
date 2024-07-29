@@ -9,6 +9,7 @@ import com.github.standobyte.jojo.entity.stand.StandEntityTask;
 import com.github.standobyte.jojo.entity.stand.StandPose;
 import com.github.standobyte.jojo.entity.stand.StandStatFormulas;
 import com.github.standobyte.jojo.init.ModSounds;
+import com.github.standobyte.jojo.init.power.stand.ModStands;
 import com.github.standobyte.jojo.power.impl.stand.IStandPower;
 import com.github.standobyte.jojo.util.general.GeneralUtil;
 
@@ -27,15 +28,15 @@ public class MagiciansRedFlameBurst extends StandEntityAction {
         Random random = standEntity.getRandom();
         if (!world.isClientSide()) {
             GeneralUtil.doFractionTimes(() -> {
+                float resolveAmplifier;
                 MRFlameEntity flame = new MRFlameEntity(standEntity, world);
                 float velocity = (float) standEntity.getAttributeValue(ForgeMod.REACH_DISTANCE.get()) / 5F;
-                if (userPower.getResolveLevel() >= 3) {
-                    velocity *= 2F;
-                }
+                resolveAmplifier = userPower.getResolveLevel() > 2 ? 2.0f : 1.0f;
+                velocity *= resolveAmplifier;
                 flame.shootFromRotation(standEntity, standEntity.xRot + (random.nextFloat() - 0.5F) * 10F, 
-                        standEntity.yRot + (random.nextFloat() - 0.5F) * 10F, 
+                        standEntity.yRot + (random.nextFloat() - 0.5F) * 10F,
                         0, velocity, 0.0F);
-                standEntity.addProjectile(flame);
+                standEntity.addProjectileWithSetDamageMultipliedByStandStats(flame, 0.05f * resolveAmplifier);
             }, StandStatFormulas.projectileFireRateScaling(standEntity, userPower));
         }
         else {

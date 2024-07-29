@@ -3,10 +3,15 @@ package com.github.standobyte.jojo.entity.damaging.projectile;
 import java.util.Collections;
 import java.util.Optional;
 
+import com.github.standobyte.jojo.JojoMod;
 import com.github.standobyte.jojo.action.ActionTarget.TargetType;
 import com.github.standobyte.jojo.action.stand.CrazyDiamondRestoreTerrain;
+import com.github.standobyte.jojo.capability.entity.LivingUtilCapProvider;
 import com.github.standobyte.jojo.init.ModBlocks;
 import com.github.standobyte.jojo.init.ModEntityTypes;
+import com.github.standobyte.jojo.init.ModStatusEffects;
+import com.github.standobyte.jojo.init.power.stand.ModStands;
+import com.github.standobyte.jojo.power.impl.stand.IStandPower;
 import com.github.standobyte.jojo.util.mc.damage.DamageUtil;
 import com.github.standobyte.jojo.util.mod.JojoModUtil;
 
@@ -17,7 +22,9 @@ import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.potion.EffectInstance;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -68,8 +75,13 @@ public class MRFlameEntity extends ModdedProjectileEntity {
     
     @Override
     protected boolean hurtTarget(Entity target, LivingEntity owner) {
+        if (target instanceof LivingEntity) {
+            int burnAmplifier = (int) Math.floor((double) target.getCapability(LivingUtilCapProvider.CAPABILITY).map(cap -> cap.getBurnRate()).orElse(0.0f));
+            ((LivingEntity) target).addEffect(new EffectInstance(ModStatusEffects.SLOWBURN.get(), 61,  burnAmplifier, false, false, true));
+            target.getCapability(LivingUtilCapProvider.CAPABILITY).ifPresent(cap -> cap.addBurnRate(0.2f));
+        }
         return DamageUtil.dealDamageAndSetOnFire(target, 
-                entity -> super.hurtTarget(entity, owner), 10, true);
+                entity -> super.hurtTarget(entity, owner), 3, true);
     }
 
     @Override
