@@ -1,26 +1,16 @@
 package com.github.standobyte.jojo.action.stand;
 
-import com.github.standobyte.jojo.action.stand.StandEntityLightAttack;
-import com.github.standobyte.jojo.action.stand.punch.StandEntityPunch;
 import com.github.standobyte.jojo.entity.stand.StandEntity;
 import com.github.standobyte.jojo.entity.stand.StandEntityTask;
 import com.github.standobyte.jojo.init.ModStatusEffects;
-import com.github.standobyte.jojo.init.power.stand.ModStandsInit;
 import com.github.standobyte.jojo.power.impl.stand.IStandPower;
-import com.github.standobyte.jojo.util.mc.damage.StandEntityDamageSource;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.world.World;
 
-public class MagiciansRedLightAttack extends StandEntityLightAttack {
-    public MagiciansRedLightAttack(Builder builder) {
+public class MagiciansRedHeavyAttack extends StandEntityHeavyAttack {
+    public MagiciansRedHeavyAttack(Builder builder) {
         super(builder);
-    }
-
-    @Override
-    public void onMaxTraining(IStandPower power) {
-        power.unlockAction(ModStandsInit.MAGICIANS_RED_FLAME_BURST.get());
     }
 
     @Override
@@ -29,9 +19,9 @@ public class MagiciansRedLightAttack extends StandEntityLightAttack {
         if (task.getTarget().getEntity() instanceof LivingEntity) {
             LivingEntity targetEntity = (LivingEntity) task.getTarget().getEntity();
             targetEntity.addEffect(new EffectInstance(ModStatusEffects.SLOWBURN.get(), 200,
-                    targetEntity.getEffect(ModStatusEffects.SLOWBURN.get()) != null? targetEntity.getEffect(ModStatusEffects.SLOWBURN.get()).getAmplifier() + 1: 0,
+                    targetEntity.getEffect(ModStatusEffects.SLOWBURN.get()) != null? targetEntity.getEffect(ModStatusEffects.SLOWBURN.get()).getAmplifier() + 4: 4,
                     false, false, true));
-            userPower.addLearningProgressPoints(this, getMaxTrainingPoints(userPower) / 40);
+            userPower.addLearningProgressPoints(this, getMaxTrainingPoints(userPower) / 40 * 4);
         }
     }
 }

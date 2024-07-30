@@ -14,10 +14,10 @@ public class MRFireStormEntity extends Entity implements IEntityAdditionalSpawnD
 
     private LivingEntity owner;
 
-    //public MRFireStormEntity(LivingEntity owner, World world) {
-        //this(ModEntityTypes.MR_FIRE_STORM_ENTITY.get(), world);
-      //  this.owner = owner;
-    //}
+//    public MRFireStormEntity(LivingEntity owner, World world) {
+//        this(ModEntityTypes.MR_FIRE_STORM_ENTITY.get(), world);
+//        this.owner = owner;
+//    }
 
     public MRFireStormEntity(EntityType<?> type, World world) {
         super(type, world);

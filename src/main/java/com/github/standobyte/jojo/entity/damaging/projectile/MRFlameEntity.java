@@ -64,7 +64,7 @@ public class MRFlameEntity extends ModdedProjectileEntity {
     
     @Override
     protected float knockbackMultiplier() {
-        return 0.1F;
+        return 0.02F;
     }
     
     @Override

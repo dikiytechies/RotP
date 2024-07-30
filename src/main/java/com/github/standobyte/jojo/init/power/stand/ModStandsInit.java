@@ -467,7 +467,8 @@ public class ModStandsInit {
     
     public static final RegistryObject<StandEntityLightAttack> MAGICIANS_RED_PUNCH = ACTIONS.register("magicians_red_punch", 
             () -> new MagiciansRedLightAttack(new MagiciansRedLightAttack.Builder()
-                    .punchSound(ModSounds.MAGICIANS_RED_PUNCH_LIGHT)));
+                    .punchSound(ModSounds.MAGICIANS_RED_PUNCH_LIGHT)
+                    .isTrained()));
 
     public static final RegistryObject<StandEntityHeavyAttack> MAGICIANS_RED_KICK = ACTIONS.register("magicians_red_kick", 
             () -> new MagiciansRedKick(new StandEntityHeavyAttack.Builder()
@@ -475,7 +476,7 @@ public class ModStandsInit {
                     .partsRequired(StandPart.LEGS)));
 
     public static final RegistryObject<StandEntityHeavyAttack> MAGICIANS_RED_HEAVY_PUNCH = ACTIONS.register("magicians_red_heavy_punch", 
-            () -> new StandEntityHeavyAttack(new StandEntityHeavyAttack.Builder()
+            () -> new MagiciansRedHeavyAttack(new MagiciansRedHeavyAttack.Builder()
                     .punchSound(ModSounds.MAGICIANS_RED_PUNCH_HEAVY)
                     .partsRequired(StandPart.ARMS)
                     .setFinisherVariation(MAGICIANS_RED_KICK)
@@ -483,8 +484,8 @@ public class ModStandsInit {
     
     public static final RegistryObject<MagiciansRedFlameBurst> MAGICIANS_RED_FLAME_BURST = ACTIONS.register("magicians_red_flame_burst", 
             () -> new MagiciansRedFlameBurst(new StandEntityAction.Builder().holdType()
-                    .resolveLevelToUnlock(0)
                     .staminaCostTick(4)
+                    .noResolveUnlock()
                     .standOffsetFront().standPose(MagiciansRedFlameBurst.FLAME_BURST_POSE)
                     .partsRequired(StandPart.MAIN_BODY)));
     

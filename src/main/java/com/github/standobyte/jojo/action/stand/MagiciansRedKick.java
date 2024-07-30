@@ -9,6 +9,7 @@ import com.github.standobyte.jojo.entity.stand.StandEntity;
 import com.github.standobyte.jojo.entity.stand.StandEntityTask;
 import com.github.standobyte.jojo.init.ModSounds;
 import com.github.standobyte.jojo.init.ModStatusEffects;
+import com.github.standobyte.jojo.init.power.stand.ModStandsInit;
 import com.github.standobyte.jojo.power.impl.stand.IStandPower;
 import com.github.standobyte.jojo.util.mc.damage.StandEntityDamageSource;
 
@@ -115,10 +116,12 @@ public class MagiciansRedKick extends StandEntityHeavyAttack {
                     float burnTickDamage = target.getEffect(ModStatusEffects.SLOWBURN.get()).getAmplifier() < 6 ? 1 / (target.getEffect(ModStatusEffects.SLOWBURN.get()).getAmplifier() + 1) : target.getEffect(ModStatusEffects.SLOWBURN.get()).getAmplifier() > 6 ? target.getEffect(ModStatusEffects.SLOWBURN.get()).getAmplifier() - 6 : 1;
                     target.hurt(new DamageSource("onFire").bypassArmor(), (float) target.getEffect(ModStatusEffects.SLOWBURN.get()).getDuration() / 20 * burnTickDamage);
                     target.clearFire();
+                    userPower.addLearningProgressPoints(this, getMaxTrainingPoints(userPower) / 40 * (target.getEffect(ModStatusEffects.SLOWBURN.get()).getAmplifier() + 1));
                     target.removeEffect(ModStatusEffects.SLOWBURN.get());
                 }
             } else {
                 target.addEffect(new EffectInstance(ModStatusEffects.SLOWBURN.get(), 15 * 20, 6, false, false, true));
+                userPower.addLearningProgressPoints(this, getMaxTrainingPoints(userPower) / 40 * 6);
             }
         }
     }

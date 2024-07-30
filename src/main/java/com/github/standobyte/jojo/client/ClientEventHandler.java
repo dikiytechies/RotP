@@ -508,7 +508,7 @@ public class ClientEventHandler {
                     Entity mountEntity = entity.getVehicle();
                     entity = mountEntity instanceof LivingEntity ? (LivingEntity) mountEntity : null;
                 }
-                if (entity != null && entity.hasEffect(ModStatusEffects.BLEEDING.get())) {
+                /*if (entity != null && entity.hasEffect(ModStatusEffects.BLEEDING.get())) {
                     IngameGui gui = mc.gui;
                     int width = mc.getWindow().getGuiScaledWidth();
                     int height = mc.getWindow().getGuiScaledHeight();
@@ -520,7 +520,7 @@ public class ClientEventHandler {
                         renderHealthWithBleeding(entity, event.getMatrixStack(), gui, event, width, height);
                     }
                     event.setCanceled(true);
-                }
+                }*/
             }
             break;
         default:
