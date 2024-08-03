@@ -16,6 +16,7 @@ import com.github.standobyte.jojo.util.mod.JojoModUtil;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
 public class HierophantGreenEmeraldSplash extends StandEntityAction {
@@ -111,5 +112,4 @@ public class HierophantGreenEmeraldSplash extends StandEntityAction {
     public StandRelativeOffset getOffsetFromUser(IStandPower standPower, StandEntity standEntity, StandEntityTask task) {
         return !standEntity.isArmsOnlyMode() && task.getPhase() != Phase.PERFORM ? null : super.getOffsetFromUser(standPower, standEntity, task);
     }
-    
 }

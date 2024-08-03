@@ -4,37 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
+import com.github.standobyte.jojo.entity.*;
+import com.github.standobyte.jojo.entity.damaging.projectile.*;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.github.standobyte.jojo.JojoMod;
-import com.github.standobyte.jojo.entity.AfterimageEntity;
-import com.github.standobyte.jojo.entity.CrimsonBubbleEntity;
-import com.github.standobyte.jojo.entity.EyeOfEnderInsideEntity;
-import com.github.standobyte.jojo.entity.FireworkInsideEntity;
-import com.github.standobyte.jojo.entity.HamonBlockChargeEntity;
-import com.github.standobyte.jojo.entity.HamonProjectileShieldEntity;
-import com.github.standobyte.jojo.entity.HamonSendoOverdriveEntity;
-import com.github.standobyte.jojo.entity.LeavesGliderEntity;
-import com.github.standobyte.jojo.entity.MRDetectorEntity;
-import com.github.standobyte.jojo.entity.PillarmanTempleEngravingEntity;
-import com.github.standobyte.jojo.entity.RoadRollerEntity;
-import com.github.standobyte.jojo.entity.SoulEntity;
 import com.github.standobyte.jojo.entity.damaging.LightBeamEntity;
-import com.github.standobyte.jojo.entity.damaging.projectile.CDBlockBulletEntity;
-import com.github.standobyte.jojo.entity.damaging.projectile.CDBloodCutterEntity;
-import com.github.standobyte.jojo.entity.damaging.projectile.HGEmeraldEntity;
-import com.github.standobyte.jojo.entity.damaging.projectile.HamonBubbleBarrierEntity;
-import com.github.standobyte.jojo.entity.damaging.projectile.HamonBubbleCutterEntity;
-import com.github.standobyte.jojo.entity.damaging.projectile.HamonBubbleEntity;
-import com.github.standobyte.jojo.entity.damaging.projectile.HamonCutterEntity;
-import com.github.standobyte.jojo.entity.damaging.projectile.HamonTurquoiseBlueOverdriveEntity;
-import com.github.standobyte.jojo.entity.damaging.projectile.MRCrossfireHurricaneEntity;
-import com.github.standobyte.jojo.entity.damaging.projectile.MRFireballEntity;
-import com.github.standobyte.jojo.entity.damaging.projectile.MRFlameEntity;
-import com.github.standobyte.jojo.entity.damaging.projectile.MolotovEntity;
-import com.github.standobyte.jojo.entity.damaging.projectile.SCFlameSwingEntity;
-import com.github.standobyte.jojo.entity.damaging.projectile.SCRapierEntity;
-import com.github.standobyte.jojo.entity.damaging.projectile.TommyGunBulletEntity;
 import com.github.standobyte.jojo.entity.damaging.projectile.ownerbound.HGBarrierEntity;
 import com.github.standobyte.jojo.entity.damaging.projectile.ownerbound.HGGrapplingStringEntity;
 import com.github.standobyte.jojo.entity.damaging.projectile.ownerbound.HGStringEntity;
@@ -232,7 +207,7 @@ public class ModEntityTypes {
             .build(new ResourceLocation(JojoMod.MOD_ID, "road_roller").toString()));
     
     public static final RegistryObject<EntityType<MRFlameEntity>> MR_FLAME = ENTITIES.register("mr_flame", 
-            () -> EntityType.Builder.<MRFlameEntity>of(MRFlameEntity::new, EntityClassification.MISC).sized(0.0625F, 0.0625F).noSummon().noSave().setUpdateInterval(10)
+            () -> EntityType.Builder.<MRFlameEntity>of(MRFlameEntity::new, EntityClassification.MISC).sized(0.0625F, 0.0625F).noSummon().noSave().setUpdateInterval(10).clientTrackingRange(64)
             .build(new ResourceLocation(JojoMod.MOD_ID, "mr_flame").toString()));
     
     public static final RegistryObject<EntityType<MRFireballEntity>> MR_FIREBALL = ENTITIES.register("mr_fireball", 
@@ -270,6 +245,10 @@ public class ModEntityTypes {
     public static final RegistryObject<EntityType<FireworkInsideEntity>> FIREWORK_INSIDE = ENTITIES.register("firework_inside", 
             () -> EntityType.Builder.<FireworkInsideEntity>of(FireworkInsideEntity::new, EntityClassification.MISC).sized(0.25F, 0.25F).clientTrackingRange(4).updateInterval(10)
             .build(new ResourceLocation(JojoMod.MOD_ID, "firework_inside").toString()));
+
+    public static final RegistryObject<EntityType<MRFireStormEntity>> MR_FIRESTORM_ENTITY = ENTITIES.register("firestorm",
+            () -> EntityType.Builder.<MRFireStormEntity>of(MRFireStormEntity::new, EntityClassification.MISC).sized(0.0f, 1.6f).setShouldReceiveVelocityUpdates(false).setUpdateInterval(Integer.MAX_VALUE)
+                    .build(new ResourceLocation(JojoMod.MOD_ID, "firestorm").toString()));
     
     
 

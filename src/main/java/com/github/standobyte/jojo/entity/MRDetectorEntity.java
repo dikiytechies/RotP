@@ -90,7 +90,7 @@ public class MRDetectorEntity extends Entity implements IEntityAdditionalSpawnDa
         Optional<LivingEntity> closestDetected = entities.stream().min((e1, e2) -> (int) (e1.distanceToSqr(this) - e2.distanceToSqr(this)));
         closestDetected.ifPresent(entity -> {
             if (this.getBoundingBox().intersects(entity.getBoundingBox())) {
-                DamageUtil.setOnFire(entity, 4, true);
+                DamageUtil.setOnFire(entity, 15, true);
             }
         });
         return closestDetected.isPresent() ? closestDetected.get().position().subtract(position()) : null;

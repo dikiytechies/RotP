@@ -3,6 +3,7 @@ package com.github.standobyte.jojo.entity.stand.stands;
 import java.util.function.Supplier;
 
 import com.github.standobyte.jojo.action.stand.punch.StandEntityPunch;
+import com.github.standobyte.jojo.entity.damaging.projectile.MRFlameEntity;
 import com.github.standobyte.jojo.entity.stand.StandEntity;
 import com.github.standobyte.jojo.entity.stand.StandEntityTask;
 import com.github.standobyte.jojo.entity.stand.StandEntityType;
@@ -11,12 +12,18 @@ import com.github.standobyte.jojo.util.mc.damage.DamageUtil;
 
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class MagiciansRedEntity extends StandEntity {
+
+    private static final DataParameter<Boolean> CASTING_FIRESTORM = EntityDataManager.defineId(MagiciansRedEntity.class, DataSerializers.BOOLEAN);
     
     public MagiciansRedEntity(StandEntityType<MagiciansRedEntity> type, World world) {
         super(type, world);
@@ -58,5 +65,43 @@ public class MagiciansRedEntity extends StandEntity {
                 }
             }
         }
+    }
+
+    @Deprecated
+    public static void firestormCast(LivingEntity user, IStandPower power) {
+        World world = user.level;
+        if (power.getStandManifestation() instanceof MagiciansRedEntity) {
+            StandEntity standEntity = ((StandEntity) power.getStandManifestation());
+            if (!world.isClientSide()) {
+                for (float i = 0.0f; i < 6.28f; i+=1.57) {
+                    for (double j = 0.25; j < 4.404; j += 0.125) {
+                        MRFlameEntity flame = new MRFlameEntity(standEntity, world, true, i, j);
+                        selectFlamePosition(flame, i, j);
+                        standEntity.addProjectileWithSetDamageMultipliedByStandStats(flame, 0.02f);
+                        if (j > 3 && j < 4.279) {
+                            flame = new MRFlameEntity(standEntity, world, true, i, j + 0.0625);
+                            selectFlamePosition(flame, i, j + 0.0625);
+                            standEntity.addProjectileWithSetDamageMultipliedByStandStats(flame, 0.02f);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private static void selectFlamePosition(MRFlameEntity flame, float positionIndex, double j) {
+        flame.moveTo(flame.getX() + flame.getYOffsetMultiplier() * flame.getRadius() * Math.cos(positionIndex), flame.getY() + j - 1.75, flame.getZ() + flame.getYOffsetMultiplier() * flame.getRadius() * Math.sin(positionIndex));
+    }
+
+    public boolean isCastingFirestorm() {
+        return entityData.get(CASTING_FIRESTORM);
+    }
+    public void setCastingFirestorm(boolean cast) {
+        entityData.set(CASTING_FIRESTORM, cast);
+    }
+    @Override
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        entityData.define(CASTING_FIRESTORM, false);
     }
 }

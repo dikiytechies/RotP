@@ -266,6 +266,10 @@ public class GameplayEventHandler {
             });
             IStandPower.getStandPowerOptional(player).ifPresent(power -> {
                 MagiciansRedEntity.removeFireUnderPlayer(player, power);
+                StandEntity stand = (StandEntity) power.getStandManifestation();
+                if (stand instanceof MagiciansRedEntity && ((MagiciansRedEntity) stand).isCastingFirestorm()) {
+                    MagiciansRedEntity.firestormCast(player, power);
+                }
                 power.tick();
             });
             break;

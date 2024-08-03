@@ -523,8 +523,9 @@ public class ModStandsInit {
                     .resolveLevelToUnlock(3)
                     .partsRequired(StandPart.MAIN_BODY)));
 
-    public static final RegistryObject<MagiciansRedFireStorm> MAGICIANS_RED_FIRE_STORM = ACTIONS.register("magicians_red_fire_storm",
+    public static final RegistryObject<MagiciansRedFireStorm> MAGICIANS_RED_FIRESTORM = ACTIONS.register("magicians_red_firestorm",
             () -> new MagiciansRedFireStorm(new StandEntityAction.Builder()
+                    .cooldown(20)
                     .resolveLevelToUnlock(3)
                     .partsRequired(StandPart.MAIN_BODY)));
     
@@ -544,7 +545,7 @@ public class ModStandsInit {
                             MAGICIANS_RED_BLOCK.get(), 
                             MAGICIANS_RED_RED_BIND.get(), 
                             MAGICIANS_RED_DETECTOR.get(),
-                            MAGICIANS_RED_FIRE_STORM.get()
+                            MAGICIANS_RED_FIRESTORM.get()
                             )
                     .defaultStats(StandStats.class, new StandStats.Builder()
                             .power(12.0)
