@@ -1,5 +1,5 @@
 {
-  "parent": "jojo:jojo/get_meteorite_map",
+  "parent": "jojo:jojo/buy_map",
   "display": {
     "icon": {
       "item": "jojo:meteoric_ore"

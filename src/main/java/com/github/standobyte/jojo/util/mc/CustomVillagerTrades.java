@@ -1,13 +1,11 @@
 package com.github.standobyte.jojo.util.mc;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Random;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -31,17 +29,13 @@ import net.minecraft.entity.merchant.villager.VillagerProfession;
 import net.minecraft.entity.merchant.villager.VillagerTrades;
 import net.minecraft.entity.merchant.villager.VillagerTrades.ITrade;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.entity.villager.VillagerType;
-import net.minecraft.inventory.container.MerchantContainer;
-import net.minecraft.inventory.container.Slot;
+import net.minecraft.inventory.MerchantInventory;
 import net.minecraft.item.FilledMapItem;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.MerchantOffer;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.stats.Stats;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -57,13 +51,14 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 @EventBusSubscriber(modid = JojoMod.MOD_ID)
 public class CustomVillagerTrades {
     private static final String ALREADY_GAVE_TRADE_TAG = "JojoUniqueTrade";
-    
+    private static final boolean DEBUG = false;
+
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onVillagerInteract(PlayerInteractEvent.EntityInteract event) {
         Entity target = event.getTarget();
         if (target instanceof VillagerEntity
                 && !target.level.isClientSide()
-                && !target.getTags().contains(ALREADY_GAVE_TRADE_TAG)
+                && (DEBUG || !target.getTags().contains(ALREADY_GAVE_TRADE_TAG))
                 && giveTradeManually((VillagerEntity) target, event.getPlayer())) {
             target.addTag(ALREADY_GAVE_TRADE_TAG);
         }
@@ -88,8 +83,9 @@ public class CustomVillagerTrades {
         public final long tradeCooldownTicks;
         final VillagerType villagerFamiliar;
         
-        private MapTrade(ITrade trade, long cooldownTicks, VillagerType villagerFamiliar) {
+        private MapTrade(EmeraldForMapTrade trade, long cooldownTicks, VillagerType villagerFamiliar) {
             this.trade = trade;
+            //trade.destinationType = this;
             this.tradeCooldownTicks = cooldownTicks;
             this.villagerFamiliar = villagerFamiliar;
         }
@@ -153,7 +149,7 @@ public class CustomVillagerTrades {
             if (playerHasHamon || playerHasVampirism)   hamonTempleMapChance = 0;
             else if (playerHasStand)                    hamonTempleMapChance = 0.0625;
             else switch (MapTrade.HAMON_MAP.villagerFamiliarWith(villagerData.getType())) {
-            case /*FamiliarWith.*/THIS_BIOME:           hamonTempleMapChance = 0.75;
+            case /*FamiliarWith.*/THIS_BIOME:           hamonTempleMapChance = 1;
                 break;
             case /*FamiliarWith.*/OTHER_BIOME:          hamonTempleMapChance = 0;
                 break;
@@ -174,7 +170,7 @@ public class CustomVillagerTrades {
             if (playerHasHamon || playerHasVampirism)   pillarManTempleMapChance = 0;
             else if (playerHasStand)                    pillarManTempleMapChance = 0.0125;
             else switch (MapTrade.PILLARMAN_MAP.villagerFamiliarWith(villagerData.getType())) {
-            case /*FamiliarWith.*/THIS_BIOME:           pillarManTempleMapChance = 1.0;
+            case /*FamiliarWith.*/THIS_BIOME:           pillarManTempleMapChance = 1;
                 break;
             case /*FamiliarWith.*/OTHER_BIOME:          pillarManTempleMapChance = 0;
                 break;
@@ -264,7 +260,7 @@ public class CustomVillagerTrades {
     }
     
     // the initialization is temporarily commented out in PlayerUtilCap's constructor
-    public static class MapItemStackTradeListener extends PlayerStatListener<Item> { // TODO make tracking bought items ItemStack sensitive
+    /*public static class MapItemStackTradeListener extends PlayerStatListener<Item> { // TODO make tracking bought items ItemStack sensitive
 
         private static final ITextComponent[] MAP_NAMES = {
                 new TranslationTextComponent("filled_map.jojo:meteorite"),
@@ -330,5 +326,5 @@ public class CustomVillagerTrades {
         }
         
         return Optional.empty();
-    }
+    }*/
 }

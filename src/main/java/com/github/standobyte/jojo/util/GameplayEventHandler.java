@@ -52,6 +52,7 @@ import com.github.standobyte.jojo.item.InkPastaItem;
 import com.github.standobyte.jojo.item.OilItem;
 import com.github.standobyte.jojo.item.StandDiscItem;
 import com.github.standobyte.jojo.item.StoneMaskItem;
+import com.github.standobyte.jojo.modcompat.ModInteractionUtil;
 import com.github.standobyte.jojo.network.PacketManager;
 import com.github.standobyte.jojo.network.packets.fromserver.BloodParticlesPacket;
 import com.github.standobyte.jojo.network.packets.fromserver.ResolveEffectStartPacket;
@@ -88,7 +89,6 @@ import com.github.standobyte.jojo.util.mc.damage.ModdedDamageSourceWrapper;
 import com.github.standobyte.jojo.util.mc.damage.StandLinkDamageSource;
 import com.github.standobyte.jojo.util.mc.reflection.CommonReflection;
 import com.github.standobyte.jojo.util.mod.JojoModUtil;
-import com.github.standobyte.jojo.util.mod.ModInteractionUtil;
 import com.github.standobyte.jojo.util.mod.NoKnockbackOnBlocking;
 
 import net.minecraft.block.AbstractFurnaceBlock;
@@ -919,7 +919,7 @@ public class GameplayEventHandler {
                 if (power.getTypeSpecificData(vampirism).map(vamp -> !vamp.isVampireAtFullPower()).orElse(false) || power.givePower(vampirism)) {
                     entity.level.playSound(null, entity, ModSounds.STONE_MASK_ACTIVATION_ENTITY.get(), entity.getSoundSource(), 1.0F, 1.0F);
                     power.getTypeSpecificData(vampirism).get().setVampireFullPower(true);
-                    StoneMaskItem.setActivatedArmorTexture(headStack); // TODO light beams on stone mask activation
+                    StoneMaskItem.setActivatedArmorTexture(headStack); // TODO light beams on stone mask activation?
                     headStack.hurtAndBreak(1, entity, stack -> {});
                     return true;
                 }
@@ -1346,14 +1346,20 @@ public class GameplayEventHandler {
     
     @SubscribeEvent
     public static void onWakeUp(PlayerWakeUpEvent event) {
+        PlayerEntity player = event.getPlayer();
+        
         if (!event.wakeImmediately() && !event.updateWorld()) {
-            IStandPower.getStandPowerOptional(event.getPlayer()).ifPresent(stand -> {
+            IStandPower.getStandPowerOptional(player).ifPresent(stand -> {
                 if (stand.hasPower()) {
                     stand.setStamina(stand.getMaxStamina());
                 }
             });
         }
-        VampirismData.finishCuringOnWakingUp(event.getPlayer());
+        
+        VampirismData.finishCuringOnWakingUp(player);
+        
+        player.getCapability(PlayerUtilCapProvider.CAPABILITY).ifPresent(
+                playerData -> playerData.onWakeUp());
     }
     
     @SubscribeEvent(priority = EventPriority.LOWEST)

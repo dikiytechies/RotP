@@ -54,6 +54,7 @@ import com.github.standobyte.jojo.init.power.non_stand.hamon.ModHamonActions;
 import com.github.standobyte.jojo.init.power.stand.ModStands;
 import com.github.standobyte.jojo.init.power.stand.ModStandsInit;
 import com.github.standobyte.jojo.item.OilItem;
+import com.github.standobyte.jojo.modcompat.ModInteractionUtil;
 import com.github.standobyte.jojo.modcompat.OptionalDependencyHelper;
 import com.github.standobyte.jojo.network.packets.fromserver.ServerIdPacket;
 import com.github.standobyte.jojo.potion.BleedingEffect;
@@ -270,7 +271,7 @@ public class ClientEventHandler {
             });
         }
     }
-
+    
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void onRenderPlayer(RenderPlayerEvent.Pre event) {
         if (mc.player != event.getPlayer()) {
@@ -310,7 +311,7 @@ public class ClientEventHandler {
                 if (!mc.isPaused()) {
                     ClientTicking.tickAll();
                     ClientTickingSoundsHelper.tickBossMusic();
-
+                    
                     mc.level.getCapability(WorldUtilCapProvider.CAPABILITY).ifPresent(cap -> {
                         cap.tick();
                     });
@@ -320,7 +321,7 @@ public class ClientEventHandler {
                         entity.getCapability(ProjectileHamonChargeCapProvider.CAPABILITY).ifPresent(cap -> cap.tick());
                         entity.getCapability(EntityHamonChargeCapProvider.CAPABILITY).ifPresent(cap -> cap.tick());
                     });
-
+                    
                     FirstPersonHamonAura.getInstance().tick();
                     InventoryItemHighlight.tick();
                 }
@@ -457,7 +458,7 @@ public class ClientEventHandler {
             event.setFOV(event.getFOV() / zoomModifier);
         }
     }
-
+    
     @SubscribeEvent
     public void cameraSetup(EntityViewRenderEvent.CameraSetup event) {
         PolaroidHelper.pictureCameraSetup(event);
@@ -497,6 +498,8 @@ public class ClientEventHandler {
     
     @SubscribeEvent(priority = EventPriority.LOW)
     public void renderHpWithBleeding(RenderGameOverlayEvent.Pre event) {
+        if (ModInteractionUtil.isModLoaded("healthoverlay")) return;
+
         switch (event.getType()) {
         case HEALTH:
         case HEALTHMOUNT:
@@ -508,7 +511,7 @@ public class ClientEventHandler {
                     Entity mountEntity = entity.getVehicle();
                     entity = mountEntity instanceof LivingEntity ? (LivingEntity) mountEntity : null;
                 }
-                /*if (entity != null && entity.hasEffect(ModStatusEffects.BLEEDING.get())) {
+                if (entity != null) {
                     IngameGui gui = mc.gui;
                     int width = mc.getWindow().getGuiScaledWidth();
                     int height = mc.getWindow().getGuiScaledHeight();
@@ -520,7 +523,7 @@ public class ClientEventHandler {
                         renderHealthWithBleeding(entity, event.getMatrixStack(), gui, event, width, height);
                     }
                     event.setCanceled(true);
-                }*/
+                }
             }
             break;
         default:
@@ -785,30 +788,30 @@ public class ClientEventHandler {
                     INonStandPower.getNonStandPowerOptional(player).ifPresent(power -> {
                         ActionsOverlayGui hud = ActionsOverlayGui.getInstance();
                         if ((hud.isActionSelectedAndEnabled(
-                                ModHamonActions.JONATHAN_OVERDRIVE_BARRAGE.get(),
+                                ModHamonActions.JONATHAN_OVERDRIVE_BARRAGE.get(), 
                                 ModHamonActions.JONATHAN_SUNLIGHT_YELLOW_OVERDRIVE_BARRAGE.get(),
                                 ModHamonActions.HAMON_WALL_CLIMBING.get())
                                 || player.getCapability(LivingUtilCapProvider.CAPABILITY).map(cap -> cap.isWallClimbing()).orElse(false))
                                 && MCUtil.isHandFree(player, Hand.MAIN_HAND) && MCUtil.isHandFree(player, Hand.OFF_HAND)) {
-                            renderHand(Hand.OFF_HAND, event.getMatrixStack(), event.getBuffers(), event.getLight(),
+                            renderHand(Hand.OFF_HAND, event.getMatrixStack(), event.getBuffers(), event.getLight(), 
                                     event.getPartialTicks(), event.getInterpolatedPitch(), player);
                         }
                     });
 
                     boolean hasGloves = GlovesLayer.areGloves(player.getItemInHand(Hand.MAIN_HAND)) || GlovesLayer.areGloves(player.getItemInHand(Hand.OFF_HAND));
                     boolean hasEffect = player.hasEffect(ModStatusEffects.HAMON_SPREAD.get()) || player.hasEffect(ModStatusEffects.FREEZE.get());
-                    if (hasGloves && (GlovesLayer.areGloves(item) || item.isEmpty()) ||
-                            hasEffect && item.isEmpty() && !player.isInvisible()) {
+                    if (hasGloves && (GlovesLayer.areGloves(item) || item.isEmpty()) || 
+                            hasEffect && item.isEmpty()) {
                         event.setCanceled(true);
-                        renderHand(Hand.MAIN_HAND, event.getMatrixStack(), event.getBuffers(), event.getLight(),
+                        renderHand(Hand.MAIN_HAND, event.getMatrixStack(), event.getBuffers(), event.getLight(), 
                                 event.getPartialTicks(), event.getInterpolatedPitch(), player);
                     }
                 }
             }
-
+            
             if (!item.isEmpty() && item.getItem() == ModItems.PHOTO.get()) {
                 event.setCanceled(true);
-                PolaroidHelper.renderPhotoInHand(event.getMatrixStack(), event.getBuffers(), event.getLight(),
+                PolaroidHelper.renderPhotoInHand(event.getMatrixStack(), event.getBuffers(), event.getLight(), 
                         event.getEquipProgress(), MCUtil.getHandSide(player, hand), event.getSwingProgress(), item, event.getPartialTicks());
             }
         }
@@ -871,8 +874,8 @@ public class ClientEventHandler {
             FirstPersonHamonAura.getInstance().renderParticles(event.getPoseStack(), event.getMultiBufferSource(), event.getArm());
         }
     }
-
-
+    
+    
     
     @SubscribeEvent
     public void afterScreenRender(DrawScreenEvent.Post event) {
@@ -1197,26 +1200,26 @@ public class ClientEventHandler {
                     cap -> cap.setVehicleType(mountedType));
         }
     }
-
-
+    
+    
 
     private UUID serverId;
     private boolean isLoggedIn = false;
-
+    
     public void setServerId(ServerIdPacket packet) {
         serverId = packet.serverId;
     }
-
+    
     @Nullable
     public UUID getServerId() {
         return isLoggedIn ? serverId : null;
     }
-
+    
     @SubscribeEvent
     public void clientLoggedIn(ClientPlayerNetworkEvent.LoggedInEvent event) {
         isLoggedIn = true;
     }
-
+    
     @SubscribeEvent
     public void clientLoggedOut(ClientPlayerNetworkEvent.LoggedOutEvent event) {
         PhotosCache.onLogOut(serverId);
